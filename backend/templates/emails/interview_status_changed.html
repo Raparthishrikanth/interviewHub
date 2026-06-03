@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Interview Status Updated</title>
+</head>
+<body style="font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; background-color: #f8fafc; margin: 0; padding: 40px 0; color: #1e293b;">
+    <table align="center" border="0" cellpadding="0" cellspacing="0" width="600" style="background-color: #ffffff; border-radius: 12px; overflow: hidden; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06); border-collapse: collapse;">
+        <!-- Header -->
+        <tr>
+            <td style="background: linear-gradient(135deg, #0284c7 0%, #0ea5e9 100%); padding: 40px 30px; text-align: center;">
+                <h1 style="color: #ffffff; margin: 0; font-size: 26px; font-weight: 700; letter-spacing: -0.025em;">Interview Hub</h1>
+                <p style="color: #e0f2fe; margin: 5px 0 0 0; font-size: 16px;">Status Update for Your Interview</p>
+            </td>
+        </tr>
+        <!-- Content -->
+        <tr>
+            <td style="padding: 40px 30px;">
+                <p style="font-size: 16px; line-height: 1.6; margin: 0 0 20px 0;">Hi <strong>{{ candidate_name }}</strong>,</p>
+                <p style="font-size: 16px; line-height: 1.6; margin: 0 0 35px 0;">The status of your interview for the <strong>{{ role }}</strong> role has been updated:</p>
+                
+                <!-- Status Comparison Card -->
+                <table border="0" cellpadding="0" cellspacing="0" width="100%" style="background-color: #f0f9ff; border-radius: 8px; padding: 25px; margin-bottom: 30px; text-align: center;">
+                    <tr>
+                        <td width="40%">
+                            <span style="font-size: 12px; color: #64748b; font-weight: 600; display: block; margin-bottom: 5px; text-transform: uppercase;">Previous Status</span>
+                            <span style="font-size: 16px; color: #94a3b8; font-weight: 700; text-decoration: line-through;">{{ old_status }}</span>
+                        </td>
+                        <td width="20%">
+                            <span style="font-size: 24px; color: #0284c7;">&rarr;</span>
+                        </td>
+                        <td width="40%">
+                            <span style="font-size: 12px; color: #0284c7; font-weight: 600; display: block; margin-bottom: 5px; text-transform: uppercase;">New Status</span>
+                            <span style="font-size: 18px; color: #0369a1; font-weight: 800; background-color: #e0f2fe; padding: 6px 14px; border-radius: 9999px; display: inline-block;">{{ new_status }}</span>
+                        </td>
+                    </tr>
+                </table>
+
+                <table border="0" cellpadding="0" cellspacing="0" width="100%" style="background-color: #f8fafc; border-radius: 8px; padding: 20px; margin-bottom: 30px; border: 1px solid #e2e8f0;">
+                    <tr>
+                        <td style="padding-bottom: 8px; font-size: 14px; color: #64748b; font-weight: 600;" width="130">Interview Round:</td>
+                        <td style="padding-bottom: 8px; font-size: 14px; color: #0f172a; font-weight: 700;">{{ type }}</td>
+                    </tr>
+                    <tr>
+                        <td style="padding-bottom: 8px; font-size: 14px; color: #64748b; font-weight: 600;">Date & Time:</td>
+                        <td style="padding-bottom: 8px; font-size: 14px; color: #0f172a; font-weight: 600;">{{ date }}</td>
+                    </tr>
+                    {% if meeting_link %}
+                    <tr>
+                        <td style="font-size: 14px; color: #64748b; font-weight: 600;">Meeting Link:</td>
+                        <td><a href="{{ meeting_link }}" style="font-size: 14px; color: #0284c7; font-weight: 700; text-decoration: none;">Join Meeting &rarr;</a></td>
+                    </tr>
+                    {% endif %}
+                </table>
+
+                {% if new_status == "CONFIRMED" %}
+                <p style="font-size: 14px; color: #0369a1; background-color: #f0f9ff; padding: 12px 18px; border-radius: 6px; border-left: 4px solid #0284c7; margin-bottom: 30px;">
+                    <strong>Calendar Invitation Attached:</strong> We have attached a standard `.ics` file to this email. You can import it into Google Calendar, Outlook, or Apple Calendar to reserve this slot!
+                </p>
+                {% endif %}
+
+                <!-- Button -->
+                <table align="center" border="0" cellpadding="0" cellspacing="0" style="margin-bottom: 20px;">
+                    <tr>
+                        <td align="center" style="background-color: #0284c7; border-radius: 6px;">
+                            <a href="{{ frontend_url }}/my-schedule" style="display: inline-block; padding: 14px 28px; font-size: 16px; font-weight: 700; color: #ffffff; text-decoration: none;">My Schedule</a>
+                        </td>
+                    </tr>
+                </table>
+            </td>
+        </tr>
+        <!-- Footer -->
+        <tr>
+            <td style="background-color: #f8fafc; padding: 25px 30px; text-align: center; border-top: 1px solid #e2e8f0; font-size: 12px; color: #94a3b8;">
+                <p style="margin: 0 0 8px 0;">&copy; 2026 InterviewHub Inc. All rights reserved.</p>
+                <p style="margin: 0;">This email is sent automatically. Please do not reply directly.</p>
+            </td>
+        </tr>
+    </table>
+</body>
+</html>

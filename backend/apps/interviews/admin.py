@@ -1,0 +1,25 @@
+from django.contrib import admin
+from .models import Interview, Comment, HistoryLog
+
+@admin.register(Interview)
+class InterviewAdmin(admin.ModelAdmin):
+    list_display = ("id", "candidate_name", "role", "type", "mode", "date", "status", "interviewer")
+    list_filter = ("status", "type", "mode", "date")
+    search_fields = ("role", "interviewer", "candidate__name", "candidate__email")
+    ordering = ("-date",)
+
+    def candidate_name(self, obj):
+        return obj.candidate.name
+    candidate_name.short_description = "Candidate"
+
+@admin.register(Comment)
+class CommentAdmin(admin.ModelAdmin):
+    list_display = ("id", "interview", "author", "created_at")
+    list_filter = ("created_at",)
+    search_fields = ("text", "author__name", "author__email", "interview__id")
+
+@admin.register(HistoryLog)
+class HistoryLogAdmin(admin.ModelAdmin):
+    list_display = ("id", "interview", "actor_name", "message", "created_at")
+    list_filter = ("created_at",)
+    search_fields = ("message", "actor_name", "interview__id")
