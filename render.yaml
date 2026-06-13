@@ -1,0 +1,29 @@
+services:
+  - type: web
+    name: interviewhub-backend
+    env: docker
+    dockerfilePath: backend/Dockerfile
+    dockerContext: backend
+    plan: free
+    startCommand: python manage.py migrate && daphne -b 0.0.0.0 -p $PORT config.asgi:application
+    envVars:
+      - key: DEBUG
+        value: "False"
+      - key: SECRET_KEY
+        generateValue: true
+      - key: DATABASE_URL
+        fromDatabase:
+          name: interviewhub-db
+          property: connectionString
+      - key: REDIS_URL
+        sync: false
+        placeholder: "Paste Upstash Redis connection URL (rediss://...)"
+      - key: FRONTEND_URL
+        sync: false
+        placeholder: "Paste Vercel Frontend Deployment URL (https://your-app.vercel.app)"
+      - key: ALLOWED_HOSTS
+        value: "*"
+
+databases:
+  - name: interviewhub-db
+    plan: free
