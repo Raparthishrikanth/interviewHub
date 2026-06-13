@@ -1,7 +1,7 @@
 from rest_framework import serializers
 from django.contrib.auth import get_user_model
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
-from .models import Role
+from .models import Role, Recruiter
 
 User = get_user_model()
 
@@ -17,8 +17,17 @@ class CustomTokenObtainPairSerializer(TokenObtainPairSerializer):
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
-        fields = ("id", "name", "email", "role", "bio", "facebook_link", "linkedin_link", "github_link", "resume", "created_at")
+        fields = ("id", "name", "email", "role", "bio", "facebook_link", "linkedin_link", "github_link", "resume", "can_view_recruiters", "created_at")
         read_only_fields = ("id", "role", "created_at")
+
+    def validate(self, attrs):
+        # Prevent non-admin users from changing their own can_view_recruiters flag
+        request = self.context.get("request")
+        if request and request.user:
+            if request.user.role != Role.ADMIN:
+                if "can_view_recruiters" in attrs:
+                    attrs.pop("can_view_recruiters")
+        return attrs
 
 class RegisterSerializer(serializers.ModelSerializer):
     password = serializers.CharField(write_only=True, required=True, style={"input_type": "password"})
@@ -40,3 +49,9 @@ class RegisterSerializer(serializers.ModelSerializer):
             role=Role.CANDIDATE
         )
         return user
+
+class RecruiterSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Recruiter
+        fields = ("id", "name", "company", "number", "created_at")
+        read_only_fields = ("id", "created_at")

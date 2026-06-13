@@ -42,6 +42,7 @@ class User(AbstractBaseUser, PermissionsMixin):
     linkedin_link = models.URLField(blank=True, default="")
     github_link = models.URLField(blank=True, default="")
     resume = models.FileField(upload_to="resumes/", blank=True, null=True)
+    can_view_recruiters = models.BooleanField(default=False)
 
     USERNAME_FIELD = "email"
     REQUIRED_FIELDS = ["name"]
@@ -50,3 +51,14 @@ class User(AbstractBaseUser, PermissionsMixin):
 
     def __str__(self):
         return f"{self.name} ({self.email}) - {self.role}"
+
+class Recruiter(models.Model):
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    name = models.CharField(max_length=255)
+    company = models.CharField(max_length=255)
+    number = models.CharField(max_length=50)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"{self.name} ({self.company})"
+

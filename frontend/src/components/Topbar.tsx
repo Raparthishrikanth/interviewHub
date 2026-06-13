@@ -1,7 +1,7 @@
 import React from "react";
 import { Link, useNavigate, useLocation } from "react-router-dom";
 import { useAuthStore } from "../stores/useAuthStore";
-import { LogOut, Calendar, ClipboardList, Megaphone, LayoutDashboard } from "lucide-react";
+import { LogOut, Calendar, ClipboardList, Megaphone, LayoutDashboard, PhoneCall } from "lucide-react";
 import { useUIStore } from "../stores/useUIStore";
 
 export const Topbar: React.FC = () => {
@@ -68,6 +68,17 @@ export const Topbar: React.FC = () => {
             <Megaphone className="w-4 h-4" />
             Notices
           </Link>
+          <Link
+            to="/recruiters"
+            className={`flex items-center gap-1.5 px-3 py-2 rounded-lg text-sm font-semibold transition-all ${
+              isActive("/recruiters")
+                ? "bg-brand-50 text-brand-600 shadow-sm"
+                : "text-slate-600 hover:text-slate-900 hover:bg-slate-100/55"
+            }`}
+          >
+            <PhoneCall className="w-4 h-4" />
+            Recruiters
+          </Link>
         </>
       );
     }
@@ -108,6 +119,19 @@ export const Topbar: React.FC = () => {
             <Megaphone className="w-4 h-4" />
             Notices
           </Link>
+          {user.can_view_recruiters && (
+            <Link
+              to="/recruiters"
+              className={`flex items-center gap-1.5 px-3 py-2 rounded-lg text-sm font-semibold transition-all ${
+                isActive("/recruiters")
+                  ? "bg-brand-50 text-brand-600 shadow-sm"
+                  : "text-slate-600 hover:text-slate-900 hover:bg-slate-100/55"
+              }`}
+            >
+              <PhoneCall className="w-4 h-4" />
+              Recruiters
+            </Link>
+          )}
         </>
       );
     }

@@ -1,11 +1,12 @@
-from rest_framework import status, generics
+from rest_framework import status, generics, viewsets
 from rest_framework.response import Response
 from rest_framework.views import APIView
-from rest_framework.permissions import AllowAny, IsAuthenticated
+from rest_framework.permissions import AllowAny, IsAuthenticated, BasePermission
 from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
 from rest_framework_simplejwt.tokens import RefreshToken
 from django.conf import settings
-from .serializers import RegisterSerializer, UserSerializer, CustomTokenObtainPairSerializer
+from .models import Role, Recruiter
+from .serializers import RegisterSerializer, UserSerializer, CustomTokenObtainPairSerializer, RecruiterSerializer
 from django.contrib.auth import get_user_model
 
 User = get_user_model()
@@ -228,3 +229,37 @@ class MeView(APIView):
             serializer.save()
             return Response(serializer.data, status=status.HTTP_200_OK)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+class IsAdmin(BasePermission):
+    def has_permission(self, request, view):
+        return request.user.is_authenticated and request.user.role == Role.ADMIN
+
+class RecruiterPermission(BasePermission):
+    def has_permission(self, request, view):
+        if not request.user.is_authenticated:
+            return False
+        
+        # ADMIN has full access
+        if request.user.role == Role.ADMIN:
+            return True
+            
+        # CANDIDATE has read-only access (GET/HEAD/OPTIONS) if allowed
+        if request.user.role == Role.CANDIDATE:
+            if request.method in ("GET", "HEAD", "OPTIONS"):
+                return getattr(request.user, "can_view_recruiters", False)
+                
+        return False
+
+class RecruiterViewSet(viewsets.ModelViewSet):
+    queryset = Recruiter.objects.all().order_by("name")
+    serializer_class = RecruiterSerializer
+    permission_classes = [IsAuthenticated, RecruiterPermission]
+
+class CandidateManagementViewSet(viewsets.ModelViewSet):
+    """
+    Admin-only viewport to fetch all Candidates and update their recruiter permission toggle.
+    """
+    queryset = User.objects.filter(role=Role.CANDIDATE).order_by("name")
+    serializer_class = UserSerializer
+    permission_classes = [IsAuthenticated, IsAdmin]
+    http_method_names = ['get', 'patch']

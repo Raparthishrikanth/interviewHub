@@ -12,6 +12,7 @@ export interface UserProfile {
   linkedin_link?: string;
   github_link?: string;
   resume?: string; // Serialized absolute download URL
+  can_view_recruiters?: boolean;
   created_at: string;
 }
 

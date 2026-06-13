@@ -12,6 +12,7 @@ import { MySchedule } from "./pages/MySchedule";
 import { Calendar } from "./pages/Calendar";
 import { Notices } from "./pages/Notices";
 import { VerifyEmail } from "./pages/VerifyEmail";
+import { Recruiters } from "./pages/Recruiters";
 
 // Components
 import { RoleGuard } from "./components/RoleGuard";
@@ -115,6 +116,16 @@ export const App: React.FC = () => {
           element={
             <RoleGuard allowedRoles={["ADMIN", "CANDIDATE", "VIEWER"]}>
               <Notices />
+            </RoleGuard>
+          }
+        />
+
+        {/* Recruiters Visual (ADMIN & CANDIDATE Roles) */}
+        <Route
+          path="/recruiters"
+          element={
+            <RoleGuard allowedRoles={["ADMIN", "CANDIDATE"]}>
+              <Recruiters />
             </RoleGuard>
           }
         />
