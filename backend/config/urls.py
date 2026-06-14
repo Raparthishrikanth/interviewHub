@@ -34,6 +34,7 @@ urlpatterns = [
 ]
 
 from django.conf import settings
+admin.site.site_url = settings.FRONTEND_URL
 from django.conf.urls.static import static
 
 if settings.DEBUG:
