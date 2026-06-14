@@ -2,6 +2,9 @@
 # Exit immediately if a command exits with a non-zero status
 set -e
 
+# Collect static files for production
+python manage.py collectstatic --noinput
+
 # Run migrations
 python manage.py migrate
 
