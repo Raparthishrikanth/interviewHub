@@ -13,10 +13,8 @@ services:
         generateValue: true
       - key: DATABASE_URL
         sync: false
-        placeholder: "Paste your existing PostgreSQL connection URL (postgres://...)"
       - key: REDIS_URL
         sync: false
-        placeholder: "Paste Upstash Redis connection URL (rediss://...)"
       - key: FRONTEND_URL
         value: https://interview-hub-eight-steel.vercel.app
       - key: ALLOWED_HOSTS
