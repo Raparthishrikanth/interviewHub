@@ -162,14 +162,31 @@ JWT_COOKIE_SAMESITE = "Lax"
 # Channels Configuration
 REDIS_URL = config("REDIS_URL", default=None)
 if REDIS_URL:
-    CHANNEL_LAYERS = {
-        "default": {
-            "BACKEND": "channels_redis.core.RedisChannelLayer",
-            "CONFIG": {
-                "hosts": [REDIS_URL],
+    import redis
+    try:
+        # Check if Redis is actually running with a quick connect timeout (0.2s)
+        conn = redis.Redis.from_url(REDIS_URL, socket_timeout=0.2, socket_connect_timeout=0.2)
+        conn.ping()
+        CHANNEL_LAYERS = {
+            "default": {
+                "BACKEND": "channels_redis.core.RedisChannelLayer",
+                "CONFIG": {
+                    "hosts": [REDIS_URL],
+                },
             },
-        },
-    }
+        }
+    except Exception:
+        import sys
+        print(
+            "WARNING: Redis is offline or unreachable at {}. "
+            "Falling back to InMemoryChannelLayer for local development.".format(REDIS_URL),
+            file=sys.stderr
+        )
+        CHANNEL_LAYERS = {
+            "default": {
+                "BACKEND": "channels.layers.InMemoryChannelLayer",
+            },
+        }
 else:
     CHANNEL_LAYERS = {
         "default": {
