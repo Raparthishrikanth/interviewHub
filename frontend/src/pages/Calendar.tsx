@@ -4,12 +4,14 @@ import { useUIStore } from "../stores/useUIStore";
 import { Topbar } from "../components/Topbar";
 import { Link } from "react-router-dom";
 import { Footer } from "../components/Footer";
-import { ChevronLeft, ChevronRight, Video } from "lucide-react";
+import { ChevronLeft, ChevronRight, Video, Clock, User, ChevronRight as ChevronRightIcon } from "lucide-react";
+import { StatusBadge } from "../components/StatusBadge";
 
 export const Calendar: React.FC = () => {
   const { interviews, fetchInterviews } = useInterviewStore();
   const { calendarMonth, setCalendarMonth } = useUIStore();
   const [hoveredInterviewId, setHoveredInterviewId] = useState<number | string | null>(null);
+  const [selectedDate, setSelectedDate] = useState<Date>(new Date());
 
   useEffect(() => {
     fetchInterviews();
@@ -75,6 +77,8 @@ export const Calendar: React.FC = () => {
       );
     });
   };
+
+  const selectedDateInterviews = getInterviewsForDate(selectedDate);
 
   const monthNames = [
     "January", "February", "March", "April", "May", "June",
@@ -144,11 +148,19 @@ export const Calendar: React.FC = () => {
                 new Date().getMonth() === cell.date.getMonth() &&
                 new Date().getFullYear() === cell.date.getFullYear();
 
+              const isSelected =
+                selectedDate.getDate() === cell.date.getDate() &&
+                selectedDate.getMonth() === cell.date.getMonth() &&
+                selectedDate.getFullYear() === cell.date.getFullYear();
+
               return (
                 <div
                   key={index}
-                  className={`min-h-[110px] p-2 flex flex-col justify-between hover:bg-slate-50/30 transition-colors relative group ${
+                  onClick={() => setSelectedDate(cell.date)}
+                  className={`min-h-[64px] md:min-h-[110px] p-2 flex flex-col justify-between hover:bg-slate-50/30 transition-colors relative group cursor-pointer ${
                     cell.isCurrentMonth ? "bg-white" : "bg-slate-50/35 text-slate-400"
+                  } ${
+                    isSelected ? "ring-2 ring-brand-500 ring-inset bg-brand-50/10 z-10" : ""
                   } ${
                     index === 35 ? "rounded-bl-3xl" : index === 41 ? "rounded-br-3xl" : ""
                   }`}
@@ -167,14 +179,14 @@ export const Calendar: React.FC = () => {
                       {cell.day}
                     </span>
                     {dayInterviews.length > 0 && (
-                      <span className="text-[9px] font-bold text-slate-400">
+                      <span className="text-[9px] font-bold text-slate-400 hidden sm:block">
                         {dayInterviews.length} Round{dayInterviews.length > 1 ? "s" : ""}
                       </span>
                     )}
                   </div>
 
-                  {/* Indicators / Dot list */}
-                  <div className="flex flex-col gap-1 mt-2 flex-grow overflow-y-auto max-h-[70px] pr-0.5">
+                  {/* Indicators / Dot list (Desktop) */}
+                  <div className="hidden md:flex flex-col gap-1 mt-2 flex-grow overflow-y-auto max-h-[70px] pr-0.5">
                     {dayInterviews.map((interview) => (
                       <Link
                         key={interview.id}
@@ -186,7 +198,7 @@ export const Calendar: React.FC = () => {
                         {/* Dot indicator */}
                         <span
                           className={`w-2 h-2 rounded-full flex-shrink-0 transition-all hover:ring-2 ${
-                            dotColors[interview.status] || "bg-amber-500"
+                            dotColors[interview.status as keyof typeof dotColors] || "bg-amber-500"
                           }`}
                         ></span>
                         
@@ -195,6 +207,18 @@ export const Calendar: React.FC = () => {
                           {interview.candidate?.name.split(" ")[0]} ({interview.type.slice(0, 4)})
                         </span>
                       </Link>
+                    ))}
+                  </div>
+
+                  {/* Indicators / Dot list (Mobile) */}
+                  <div className="flex md:hidden flex-wrap justify-center gap-1 mt-1">
+                    {dayInterviews.map((interview) => (
+                      <span
+                        key={interview.id}
+                        className={`w-1.5 h-1.5 rounded-full ${
+                          dotColors[interview.status as keyof typeof dotColors] || "bg-amber-500"
+                        }`}
+                      ></span>
                     ))}
                   </div>
 
@@ -235,7 +259,7 @@ export const Calendar: React.FC = () => {
                         </p>
                         {interview.meeting_link && (
                           <span className="text-[9px] text-brand-400 font-bold flex items-center gap-0.5 mt-1">
-                            <Video className="w-3 h-3" />
+                            <Video className="w-3.5 h-3.5" />
                             Meeting Link Attached
                           </span>
                         )}
@@ -248,6 +272,106 @@ export const Calendar: React.FC = () => {
             })}
           </div>
 
+        </div>
+
+        {/* Selected Day Agenda */}
+        <div className="bg-white border border-slate-200 rounded-3xl p-6 shadow-premium mt-6 animate-fade-in">
+          <div className="flex items-center justify-between border-b border-slate-150 pb-4 mb-4">
+            <div>
+              <h3 className="font-extrabold text-slate-800 text-base">
+                Agenda for {selectedDate.toLocaleDateString(undefined, {
+                  weekday: "long",
+                  month: "long",
+                  day: "numeric",
+                  year: "numeric"
+                })}
+              </h3>
+              <p className="text-slate-450 text-xs mt-0.5 font-semibold">
+                Scheduled interview rounds for this selected date.
+              </p>
+            </div>
+            <span className="inline-flex items-center px-2.5 py-1 text-xs font-bold text-slate-650 bg-slate-100 rounded-full">
+              {selectedDateInterviews.length} Round{selectedDateInterviews.length !== 1 ? "s" : ""}
+            </span>
+          </div>
+
+          <div className="space-y-4">
+            {selectedDateInterviews.map((interview) => (
+              <div
+                key={interview.id}
+                className="bg-slate-50/50 border border-slate-200/60 p-4 rounded-2xl flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 hover:border-slate-300 transition-all"
+              >
+                <div className="space-y-2 flex-grow">
+                  <div className="flex flex-wrap items-center gap-2">
+                    <span className="text-xs font-black text-brand-600 uppercase tracking-wider">
+                      {interview.type}
+                    </span>
+                    <StatusBadge status={interview.status} />
+                  </div>
+                  
+                  <p className="text-sm font-bold text-slate-800">
+                    Candidate: <span className="font-extrabold text-slate-900">{interview.candidate?.name}</span>
+                    <span className="text-xs text-slate-500 font-semibold block sm:inline sm:ml-2">({interview.candidate?.email})</span>
+                  </p>
+
+                  <p className="text-xs text-slate-650 font-bold">
+                    Role: <span className="text-slate-800 font-extrabold">{interview.role}</span>
+                    {interview.department && ` • ${interview.department}`}
+                  </p>
+
+                  <div className="flex flex-wrap items-center gap-4 text-xs font-semibold text-slate-500 pt-1">
+                    <span className="flex items-center gap-1">
+                      <Clock className="w-3.5 h-3.5 text-slate-400" />
+                      {new Date(interview.date).toLocaleTimeString(undefined, {
+                        hour: "2-digit",
+                        minute: "2-digit"
+                      })} ({interview.duration_min} min)
+                    </span>
+                    {interview.interviewer && (
+                      <span className="flex items-center gap-1">
+                        <User className="w-3.5 h-3.5 text-slate-400" />
+                        Interviewer: {interview.interviewer}
+                      </span>
+                    )}
+                    <span className="text-slate-400">•</span>
+                    <span className="uppercase tracking-wider text-[10px] bg-slate-100 px-1.5 py-0.5 rounded font-bold">
+                      {interview.mode}
+                    </span>
+                  </div>
+
+                  {interview.meeting_link && (
+                    <div className="pt-1.5">
+                      <a
+                        href={interview.meeting_link}
+                        target="_blank"
+                        rel="noreferrer"
+                        className="inline-flex items-center gap-1 px-3 py-1 text-xs font-bold text-brand-600 bg-brand-50 hover:bg-brand-100 rounded-lg transition-all"
+                      >
+                        <Video className="w-3.5 h-3.5" />
+                        Join Zoom Room
+                      </a>
+                    </div>
+                  )}
+                </div>
+
+                <div className="flex sm:flex-col items-start sm:items-end gap-2 flex-shrink-0 pt-3 border-t border-slate-150/40 sm:border-t-0 sm:pt-0">
+                  <Link
+                    to={`/interviews/${interview.id}`}
+                    className="inline-flex items-center gap-1 px-3.5 py-1.5 text-xs font-bold border border-slate-200 text-slate-750 hover:text-brand-650 hover:border-brand-150 hover:bg-brand-50/50 rounded-xl transition-all shadow-sm bg-white"
+                  >
+                    View Thread
+                    <ChevronRightIcon className="w-3.5 h-3.5" />
+                  </Link>
+                </div>
+              </div>
+            ))}
+
+            {selectedDateInterviews.length === 0 && (
+              <p className="text-center text-slate-450 text-sm font-semibold py-6 italic animate-fade-in">
+                No interviews scheduled for this date.
+              </p>
+            )}
+          </div>
         </div>
 
       </main>
