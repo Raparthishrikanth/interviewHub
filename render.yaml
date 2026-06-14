@@ -9,6 +9,8 @@ services:
     envVars:
       - key: DEBUG
         value: "False"
+      - key: DJANGO_SETTINGS_MODULE
+        value: config.settings.prod
       - key: SECRET_KEY
         generateValue: true
       - key: DATABASE_URL
