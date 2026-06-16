@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useNavigate, useSearchParams, Link } from "react-router-dom";
+import { useSearchParams, Link } from "react-router-dom";
 import { useAuthStore } from "../stores/useAuthStore";
 import { useUIStore } from "../stores/useUIStore";
 import { ResetPasswordSchema } from "../lib/schemas";
@@ -12,7 +12,7 @@ export const ResetPassword: React.FC = () => {
   const token = searchParams.get("token");
   const { resetPassword, loading, error, clearError } = useAuthStore();
   const { addToast } = useUIStore();
-  const navigate = useNavigate();
+
 
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
