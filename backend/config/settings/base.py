@@ -113,8 +113,19 @@ CORS_ALLOW_CREDENTIALS = True
 CORS_ALLOWED_ORIGINS = [
     FRONTEND_URL,
     "http://localhost:5173",
+    "http://localhost:5174",
+    "http://localhost:5175",
     "http://localhost:3000",
 ]
+
+# Append any custom origins configured in the environment variables
+env_cors_origins = config("CORS_ALLOWED_ORIGINS", default="")
+if env_cors_origins:
+    for origin in env_cors_origins.split(","):
+        clean_origin = origin.strip()
+        if clean_origin and clean_origin not in CORS_ALLOWED_ORIGINS:
+            CORS_ALLOWED_ORIGINS.append(clean_origin)
+
 
 # REST Framework settings
 REST_FRAMEWORK = {
@@ -196,14 +207,28 @@ else:
     }
 
 # Email configurations
-EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
+EMAIL_BACKEND = config("EMAIL_BACKEND", default="django.core.mail.backends.smtp.EmailBackend")
 EMAIL_HOST = config("EMAIL_HOST", default="localhost")
 EMAIL_PORT = config("EMAIL_PORT", default=1025, cast=int)
-EMAIL_USE_TLS = config("EMAIL_USE_TLS", default=False, cast=bool)
-EMAIL_USE_SSL = config("EMAIL_USE_SSL", default=False, cast=bool)
 EMAIL_HOST_USER = config("EMAIL_HOST_USER", default="")
 EMAIL_HOST_PASSWORD = config("EMAIL_HOST_PASSWORD", default="")
 DEFAULT_FROM_EMAIL = config("DEFAULT_FROM_EMAIL", default="noreply@interviewhub.com")
+
+# Automatically set TLS/SSL based on port if not explicitly configured in environment
+EMAIL_USE_TLS_str = config("EMAIL_USE_TLS", default="")
+EMAIL_USE_SSL_str = config("EMAIL_USE_SSL", default="")
+
+if EMAIL_USE_TLS_str == "":
+    EMAIL_USE_TLS = (EMAIL_PORT == 587)
+else:
+    EMAIL_USE_TLS = EMAIL_USE_TLS_str.lower() in ("true", "1", "yes", "on")
+
+if EMAIL_USE_SSL_str == "":
+    EMAIL_USE_SSL = (EMAIL_PORT == 465)
+else:
+    EMAIL_USE_SSL = EMAIL_USE_SSL_str.lower() in ("true", "1", "yes", "on")
+
+
 
 # Media files configurations for resume uploads
 MEDIA_URL = "/media/"

@@ -9,7 +9,10 @@ import {
   Save,
   UploadCloud,
   Download,
-  BookOpen
+  BookOpen,
+  Key,
+  Eye,
+  EyeOff
 } from "lucide-react";
 
 export const ProfileModal: React.FC = () => {
@@ -24,6 +27,18 @@ export const ProfileModal: React.FC = () => {
   const [linkedin, setLinkedin] = useState("");
   const [github, setGithub] = useState("");
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
+
+  // Password change states
+  const [showPasswordChange, setShowPasswordChange] = useState(false);
+  const [currentPassword, setCurrentPassword] = useState("");
+  const [newPassword, setNewPassword] = useState("");
+  const [confirmNewPassword, setConfirmNewPassword] = useState("");
+  
+  const [showCurrentPassword, setShowCurrentPassword] = useState(false);
+  const [showNewPassword, setShowNewPassword] = useState(false);
+  const [showConfirmNewPassword, setShowConfirmNewPassword] = useState(false);
+  
+  const [passwordChangeLoading, setPasswordChangeLoading] = useState(false);
 
   // Sync state with user profile details when modal opens
   useEffect(() => {
@@ -69,6 +84,38 @@ export const ProfileModal: React.FC = () => {
       setIsEditMode(false);
     } catch (err: any) {
       addToast("Failed to update profile.", "error");
+    }
+  };
+
+  const handlePasswordSubmit = async () => {
+    if (!currentPassword || !newPassword || !confirmNewPassword) {
+      addToast("Please fill in all password fields.", "error");
+      return;
+    }
+    if (newPassword !== confirmNewPassword) {
+      addToast("Passwords do not match.", "error");
+      return;
+    }
+    if (newPassword.length < 6) {
+      addToast("New password must be at least 6 characters long.", "error");
+      return;
+    }
+
+    setPasswordChangeLoading(true);
+    try {
+      const { changePassword } = useAuthStore.getState();
+      const msg = await changePassword(currentPassword, newPassword);
+      addToast(msg, "success");
+      
+      // Clear fields
+      setCurrentPassword("");
+      setNewPassword("");
+      setConfirmNewPassword("");
+      setShowPasswordChange(false);
+    } catch (err: any) {
+      addToast(err.response?.data?.error || err.response?.data?.detail || "Failed to change password.", "error");
+    } finally {
+      setPasswordChangeLoading(false);
     }
   };
 
@@ -306,6 +353,101 @@ export const ProfileModal: React.FC = () => {
                 )}
               </div>
             </div>
+          </div>
+
+          {/* Change Password Section */}
+          <div className="border-t border-slate-100 pt-6">
+            <button
+              type="button"
+              onClick={() => setShowPasswordChange(!showPasswordChange)}
+              className="flex items-center gap-1.5 text-xs font-bold text-slate-500 hover:text-slate-800 transition-colors focus:outline-none"
+            >
+              <Key className="w-4 h-4" />
+              {showPasswordChange ? "Hide Password Settings" : "Change Password"}
+            </button>
+            
+            {showPasswordChange && (
+              <div className="mt-4 p-4 border border-slate-100 bg-slate-50/50 rounded-2xl space-y-4">
+                {/* Current Password */}
+                <div>
+                  <label className="block text-[10px] font-bold uppercase tracking-wider text-slate-400 mb-1.5">
+                    Current Password
+                  </label>
+                  <div className="relative">
+                    <input
+                      type={showCurrentPassword ? "text" : "password"}
+                      value={currentPassword}
+                      onChange={(e) => setCurrentPassword(e.target.value)}
+                      className="w-full pl-3 pr-10 py-2 text-xs border border-slate-250 rounded-xl focus:border-brand-500 outline-none transition-all font-semibold text-slate-700 bg-white"
+                      placeholder="••••••••"
+                    />
+                    <button
+                      type="button"
+                      onClick={() => setShowCurrentPassword(!showCurrentPassword)}
+                      className="absolute right-3 top-2 text-slate-400 hover:text-slate-600 focus:outline-none"
+                    >
+                      {showCurrentPassword ? <EyeOff className="w-3.5 h-3.5" /> : <Eye className="w-3.5 h-3.5" />}
+                    </button>
+                  </div>
+                </div>
+
+                {/* New Password */}
+                <div>
+                  <label className="block text-[10px] font-bold uppercase tracking-wider text-slate-400 mb-1.5">
+                    New Password
+                  </label>
+                  <div className="relative">
+                    <input
+                      type={showNewPassword ? "text" : "password"}
+                      value={newPassword}
+                      onChange={(e) => setNewPassword(e.target.value)}
+                      className="w-full pl-3 pr-10 py-2 text-xs border border-slate-250 rounded-xl focus:border-brand-500 outline-none transition-all font-semibold text-slate-700 bg-white"
+                      placeholder="••••••••"
+                    />
+                    <button
+                      type="button"
+                      onClick={() => setShowNewPassword(!showNewPassword)}
+                      className="absolute right-3 top-2 text-slate-400 hover:text-slate-600 focus:outline-none"
+                    >
+                      {showNewPassword ? <EyeOff className="w-3.5 h-3.5" /> : <Eye className="w-3.5 h-3.5" />}
+                    </button>
+                  </div>
+                </div>
+
+                {/* Confirm New Password */}
+                <div>
+                  <label className="block text-[10px] font-bold uppercase tracking-wider text-slate-400 mb-1.5">
+                    Confirm New Password
+                  </label>
+                  <div className="relative">
+                    <input
+                      type={showConfirmNewPassword ? "text" : "password"}
+                      value={confirmNewPassword}
+                      onChange={(e) => setConfirmNewPassword(e.target.value)}
+                      className="w-full pl-3 pr-10 py-2 text-xs border border-slate-250 rounded-xl focus:border-brand-500 outline-none transition-all font-semibold text-slate-700 bg-white"
+                      placeholder="••••••••"
+                    />
+                    <button
+                      type="button"
+                      onClick={() => setShowConfirmNewPassword(!showConfirmNewPassword)}
+                      className="absolute right-3 top-2 text-slate-400 hover:text-slate-600 focus:outline-none"
+                    >
+                      {showConfirmNewPassword ? <EyeOff className="w-3.5 h-3.5" /> : <Eye className="w-3.5 h-3.5" />}
+                    </button>
+                  </div>
+                </div>
+
+                <button
+                  type="button"
+                  onClick={handlePasswordSubmit}
+                  disabled={passwordChangeLoading}
+                  className="w-full py-2 px-4 text-xs font-bold text-white bg-indigo-600 hover:bg-indigo-700 disabled:bg-slate-300 rounded-xl transition-all shadow-sm flex items-center justify-center gap-1.5"
+                >
+                  {passwordChangeLoading && <span className="w-3 h-3 border-2 border-white/30 border-t-white rounded-full animate-spin"></span>}
+                  Update Password
+                </button>
+              </div>
+            )}
           </div>
 
           {/* Action Row */}

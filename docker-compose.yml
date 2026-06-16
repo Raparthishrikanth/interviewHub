@@ -15,6 +15,13 @@ services:
     ports:
       - "6379:6379"
 
+  mailpit:
+    image: axllent/mailpit
+    ports:
+      - "1025:1025"
+      - "8025:8025"
+
+
   backend:
     build: ./backend
     command: daphne -b 0.0.0.0 -p 8000 config.asgi:application

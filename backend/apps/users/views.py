@@ -263,3 +263,92 @@ class CandidateManagementViewSet(viewsets.ModelViewSet):
     serializer_class = UserSerializer
     permission_classes = [IsAuthenticated, IsAdmin]
     http_method_names = ['get', 'patch']
+
+class RequestPasswordResetView(APIView):
+    permission_classes = (AllowAny,)
+
+    def post(self, request):
+        email = request.data.get("email")
+        if not email:
+            return Response({"error": "Email is required"}, status=status.HTTP_400_BAD_REQUEST)
+            
+        try:
+            user = User.objects.get(email=email.strip().lower())
+            
+            # Generate secure reset token (valid for 1 hour)
+            from django.core import signing
+            token = signing.dumps({"user_id": str(user.id)}, salt="password-reset")
+            
+            # Build reset link pointing to React frontend
+            reset_url = f"{settings.FRONTEND_URL}/reset-password?token={token}"
+            
+            # Dispatch background email
+            from apps.interviews.services.email import send_html_email_async
+            
+            context = {
+                "candidate_name": user.name,
+                "reset_url": reset_url
+            }
+            
+            send_html_email_async(
+                subject="Reset Your Password - InterviewHub",
+                template_name="emails/password_reset.html",
+                context=context,
+                recipient_list=[user.email]
+            )
+            
+            return Response({"message": "If the email exists, a password reset link has been sent."}, status=status.HTTP_200_OK)
+        except User.DoesNotExist:
+            # Prevent user enumeration by returning generic success
+            return Response({"message": "If the email exists, a password reset link has been sent."}, status=status.HTTP_200_OK)
+
+class ConfirmPasswordResetView(APIView):
+    permission_classes = (AllowAny,)
+
+    def post(self, request):
+        token = request.data.get("token")
+        password = request.data.get("password")
+        
+        if not token or not password:
+            return Response({"error": "Token and password are required"}, status=status.HTTP_400_BAD_REQUEST)
+            
+        try:
+            from django.core import signing
+            # Load and verify token with a 1-hour expiration threshold
+            data = signing.loads(token, salt="password-reset", max_age=3600)
+            user_id = data.get("user_id")
+            
+            user = User.objects.get(id=user_id)
+            user.set_password(password)
+            user.save()
+            
+            return Response({"message": "Password has been reset successfully! You can now log in."}, status=status.HTTP_200_OK)
+            
+        except signing.SignatureExpired:
+            return Response({"error": "The password reset link has expired. Please request a new one."}, status=status.HTTP_400_BAD_REQUEST)
+        except (signing.BadSignature, User.DoesNotExist):
+            return Response({"error": "Invalid or corrupt password reset link."}, status=status.HTTP_400_BAD_REQUEST)
+
+class ChangePasswordView(APIView):
+    permission_classes = (IsAuthenticated,)
+
+    def post(self, request):
+        old_password = request.data.get("old_password")
+        new_password = request.data.get("new_password")
+        
+        if not old_password or not new_password:
+            return Response({"error": "Both current password and new password are required"}, status=status.HTTP_400_BAD_REQUEST)
+            
+        user = request.user
+        if not user.check_password(old_password):
+            return Response({"error": "Incorrect current password"}, status=status.HTTP_400_BAD_REQUEST)
+            
+        if len(new_password) < 6:
+            return Response({"error": "New password must be at least 6 characters long"}, status=status.HTTP_400_BAD_REQUEST)
+            
+        user.set_password(new_password)
+        user.save()
+        
+        return Response({"message": "Password changed successfully!"}, status=status.HTTP_200_OK)
+
+

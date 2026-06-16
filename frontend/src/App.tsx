@@ -13,6 +13,8 @@ import { Calendar } from "./pages/Calendar";
 import { Notices } from "./pages/Notices";
 import { VerifyEmail } from "./pages/VerifyEmail";
 import { Recruiters } from "./pages/Recruiters";
+import { ForgotPassword } from "./pages/ForgotPassword";
+import { ResetPassword } from "./pages/ResetPassword";
 
 // Components
 import { RoleGuard } from "./components/RoleGuard";
@@ -59,6 +61,8 @@ export const App: React.FC = () => {
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
         <Route path="/verify-email" element={<VerifyEmail />} />
+        <Route path="/forgot-password" element={<ForgotPassword />} />
+        <Route path="/reset-password" element={<ResetPassword />} />
 
         {/* Gated Dashboard View */}
         <Route

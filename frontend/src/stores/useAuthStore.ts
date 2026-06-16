@@ -29,6 +29,9 @@ interface AuthState {
   updateProfile: (formData: FormData) => Promise<void>;
   verifyEmail: (token: string) => Promise<void>;
   resendVerificationEmail: (email: string) => Promise<string>;
+  requestPasswordReset: (email: string) => Promise<string>;
+  resetPassword: (token: string, password: string) => Promise<string>;
+  changePassword: (oldPassword: string, newPassword: string) => Promise<string>;
 }
 
 export const useAuthStore = create<AuthState>((set) => ({
@@ -166,6 +169,57 @@ export const useAuthStore = create<AuthState>((set) => ({
         err.response?.data?.error ||
         err.response?.data?.detail ||
         "Failed to resend verification email.";
+      set({ error: errorMsg, loading: false });
+      throw err;
+    }
+  },
+
+  requestPasswordReset: async (email) => {
+    set({ loading: true, error: null });
+    try {
+      const response = await api.post("/auth/password-reset-request/", { email });
+      set({ loading: false });
+      return response.data.message || "Password reset link has been sent to your email.";
+    } catch (err: any) {
+      const errorMsg =
+        err.response?.data?.error ||
+        err.response?.data?.detail ||
+        "Failed to send password reset email.";
+      set({ error: errorMsg, loading: false });
+      throw err;
+    }
+  },
+
+  resetPassword: async (token, password) => {
+    set({ loading: true, error: null });
+    try {
+      const response = await api.post("/auth/password-reset-confirm/", { token, password });
+      set({ loading: false });
+      return response.data.message || "Password has been reset successfully!";
+    } catch (err: any) {
+      const errorMsg =
+        err.response?.data?.error ||
+        err.response?.data?.detail ||
+        "Failed to reset password.";
+      set({ error: errorMsg, loading: false });
+      throw err;
+    }
+  },
+
+  changePassword: async (oldPassword, newPassword) => {
+    set({ loading: true, error: null });
+    try {
+      const response = await api.post("/auth/change-password/", {
+        old_password: oldPassword,
+        new_password: newPassword,
+      });
+      set({ loading: false });
+      return response.data.message || "Password changed successfully!";
+    } catch (err: any) {
+      const errorMsg =
+        err.response?.data?.error ||
+        err.response?.data?.detail ||
+        "Failed to change password.";
       set({ error: errorMsg, loading: false });
       throw err;
     }

@@ -5,13 +5,14 @@ import { useNavigate, Link, Navigate } from "react-router-dom";
 import { useAuthStore } from "../stores/useAuthStore";
 import { useUIStore } from "../stores/useUIStore";
 import { LoginSchema } from "../lib/schemas";
-import { Mail, Lock, LogIn, ShieldAlert } from "lucide-react";
+import { Mail, Lock, LogIn, ShieldAlert, Eye, EyeOff } from "lucide-react";
 
 export const Login: React.FC = () => {
   const { login, isAuthenticated, user, loading, error, clearError, resendVerificationEmail } = useAuthStore();
   const { addToast } = useUIStore();
   const navigate = useNavigate();
   const [resendLoading, setResendLoading] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
 
   const {
     register,
@@ -136,15 +137,25 @@ export const Login: React.FC = () => {
               <label className="block text-[10px] font-bold uppercase tracking-wider text-slate-400">
                 Password
               </label>
+              <Link to="/forgot-password" className="text-[10px] text-brand-400 hover:text-brand-300 font-bold transition-all">
+                Forgot Password?
+              </Link>
             </div>
             <div className="relative group">
               <Lock className="absolute left-3.5 top-3.5 w-4 h-4 text-slate-400 group-focus-within:text-brand-400 transition-colors" />
               <input
-                type="password"
+                type={showPassword ? "text" : "password"}
                 {...register("password")}
-                className="w-full pl-10 pr-4 py-3 text-sm bg-slate-950/60 border border-slate-800 hover:border-slate-700 text-white rounded-2xl focus:border-brand-500 focus:ring-1 focus:ring-brand-500 outline-none transition-all placeholder:text-slate-500 font-semibold"
+                className="w-full pl-10 pr-12 py-3 text-sm bg-slate-950/60 border border-slate-800 hover:border-slate-700 text-white rounded-2xl focus:border-brand-500 focus:ring-1 focus:ring-brand-500 outline-none transition-all placeholder:text-slate-500 font-semibold"
                 placeholder="••••••••"
               />
+              <button
+                type="button"
+                onClick={() => setShowPassword(!showPassword)}
+                className="absolute right-3.5 top-3.5 text-slate-400 hover:text-white transition-colors focus:outline-none"
+              >
+                {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+              </button>
             </div>
             {errors.password && (
               <p className="text-rose-400 text-xs mt-1 font-medium">{errors.password.message as string}</p>
