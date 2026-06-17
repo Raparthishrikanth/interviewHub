@@ -13,4 +13,3 @@ icalendar>=5.0
 twisted[tls]
 dj-database-url>=2.1
 whitenoise>=6.6.0
-django-anymail>=10.3

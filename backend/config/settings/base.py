@@ -25,7 +25,6 @@ INSTALLED_APPS = [
     "corsheaders",
     "django_filters",
     "channels",
-    "anymail",
 
     # Custom local apps
     "apps.users",
@@ -229,13 +228,6 @@ if EMAIL_USE_SSL_str == "":
     EMAIL_USE_SSL = (EMAIL_PORT == 465)
 else:
     EMAIL_USE_SSL = EMAIL_USE_SSL_str.lower() in ("true", "1", "yes", "on")
-
-# Anymail configurations (for HTTP-based mail delivery in production, bypassing SMTP blocks)
-ANYMAIL = {
-    "RESEND_API_KEY": config("RESEND_API_KEY", default=""),
-    "SENDGRID_API_KEY": config("SENDGRID_API_KEY", default=""),
-    "MAILGUN_API_KEY": config("MAILGUN_API_KEY", default=""),
-}
 
 
 
