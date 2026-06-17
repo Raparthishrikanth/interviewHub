@@ -38,6 +38,10 @@ const IndexRedirect: React.FC = () => {
     return <Navigate to="/login" replace />;
   }
 
+  if (user.role === "VIEWER") {
+    return <Navigate to="/interviews" replace />;
+  }
+
   return <Navigate to="/dashboard" replace />;
 };
 

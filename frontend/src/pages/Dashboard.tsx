@@ -165,7 +165,14 @@ export const Dashboard: React.FC = () => {
                         <span className="text-[10px] text-slate-400 block mt-0.5">{interview.department || "No department"}</span>
                       </td>
                       <td className="py-4 px-5">
-                        <span className="text-xs font-bold text-brand-600">{interview.type}</span>
+                        <span className="text-xs font-bold text-brand-600">
+                          {interview.type}
+                          {interview.category && (
+                            <span className="ml-1.5 px-1 py-0.5 text-[9px] font-bold bg-brand-50 text-brand-700 rounded border border-brand-100">
+                              {interview.category}
+                            </span>
+                          )}
+                        </span>
                         <span className="text-[10px] text-slate-500 block mt-0.5">{interview.mode}</span>
                       </td>
                       <td className="py-4 px-5">

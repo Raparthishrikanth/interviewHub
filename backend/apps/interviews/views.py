@@ -10,9 +10,9 @@ from django_filters.rest_framework import DjangoFilterBackend
 from pydantic import ValidationError
 
 from shared.schemas import CreateInterviewSchema, UpdateStatusSchema
-from .models import Interview, Comment, HistoryLog, Status, InterviewType
+from .models import Interview, Comment, HistoryLog, Status, InterviewType, InterviewCategory
 from apps.users.models import Role
-from .serializers import InterviewSerializer, CommentSerializer
+from .serializers import InterviewSerializer, CommentSerializer, InterviewCategorySerializer
 from .permissions import IsAdmin, IsCandidate, IsNotViewer
 from .filters import InterviewFilter
 from .services.email import (
@@ -106,6 +106,7 @@ class InterviewViewSet(viewsets.ModelViewSet):
                 department=schema.department or "",
                 type=schema.type,
                 mode=schema.mode,
+                category=schema.category or "",
                 date=schema.date,
                 duration_min=schema.duration_min,
                 interviewer=schema.interviewer or "",
@@ -312,3 +313,17 @@ class CommentViewSet(viewsets.ViewSet):
         )
 
         return Response({"message": "Comment deleted successfully."}, status=status.HTTP_200_OK)
+
+
+class InterviewCategoryViewSet(viewsets.ModelViewSet):
+    queryset = InterviewCategory.objects.all().order_by("type", "name")
+    serializer_class = InterviewCategorySerializer
+    pagination_class = None
+
+    def get_permissions(self):
+        if self.action in ("create", "update", "partial_update", "destroy"):
+            permission_classes = [IsAuthenticated, IsAdmin]
+        else:
+            permission_classes = [IsAuthenticated]
+        return [permission() for permission in permission_classes]
+

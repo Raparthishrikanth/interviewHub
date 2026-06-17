@@ -33,6 +33,7 @@ export interface Interview {
   department: string;
   type: "TECHNICAL" | "HR" | "MANAGERIAL" | "CULTURE_FIT" | "FINAL_ROUND";
   mode: "ONLINE" | "IN_PERSON" | "PHONE";
+  category?: string;
   date: string;
   duration_min: number;
   interviewer: string;

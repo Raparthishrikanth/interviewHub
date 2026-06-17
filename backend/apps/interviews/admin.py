@@ -1,5 +1,11 @@
 from django.contrib import admin
-from .models import Interview, Comment, HistoryLog
+from .models import Interview, Comment, HistoryLog, InterviewCategory
+
+@admin.register(InterviewCategory)
+class InterviewCategoryAdmin(admin.ModelAdmin):
+    list_display = ("id", "type", "name")
+    list_filter = ("type",)
+    search_fields = ("name",)
 
 @admin.register(Interview)
 class InterviewAdmin(admin.ModelAdmin):

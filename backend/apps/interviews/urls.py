@@ -1,8 +1,9 @@
 from django.urls import path, include
 from rest_framework.routers import DefaultRouter
-from .views import InterviewViewSet, CommentViewSet
+from .views import InterviewViewSet, CommentViewSet, InterviewCategoryViewSet
 
 router = DefaultRouter()
+router.register(r"categories", InterviewCategoryViewSet, basename="interviewcategory")
 router.register(r"", InterviewViewSet, basename="interview")
 
 urlpatterns = [

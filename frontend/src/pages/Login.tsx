@@ -49,6 +49,8 @@ export const Login: React.FC = () => {
   if (isAuthenticated && user) {
     if (user.role === "CANDIDATE") {
       return <Navigate to="/my-schedule" replace />;
+    } else if (user.role === "VIEWER") {
+      return <Navigate to="/interviews" replace />;
     } else {
       return <Navigate to="/dashboard" replace />;
     }
@@ -63,6 +65,8 @@ export const Login: React.FC = () => {
       const currentUser = useAuthStore.getState().user;
       if (currentUser?.role === "CANDIDATE") {
         navigate("/my-schedule");
+      } else if (currentUser?.role === "VIEWER") {
+        navigate("/interviews");
       } else {
         navigate("/dashboard");
       }

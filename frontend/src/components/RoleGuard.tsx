@@ -31,6 +31,8 @@ export const RoleGuard: React.FC<RoleGuardProps> = ({ children, allowedRoles }) 
   if (!allowedRoles.includes(user.role)) {
     if (user.role === "CANDIDATE") {
       return <Navigate to="/my-schedule" replace />;
+    } else if (user.role === "VIEWER") {
+      return <Navigate to="/interviews" replace />;
     } else {
       return <Navigate to="/dashboard" replace />;
     }

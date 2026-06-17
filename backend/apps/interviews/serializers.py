@@ -1,6 +1,11 @@
 from rest_framework import serializers
-from .models import Interview, Comment, HistoryLog
+from .models import Interview, Comment, HistoryLog, InterviewCategory
 from apps.users.serializers import UserSerializer
+
+class InterviewCategorySerializer(serializers.ModelSerializer):
+    class Meta:
+        model = InterviewCategory
+        fields = ("id", "type", "name")
 
 class HistoryLogSerializer(serializers.ModelSerializer):
     class Meta:
@@ -23,7 +28,7 @@ class InterviewSerializer(serializers.ModelSerializer):
     class Meta:
         model = Interview
         fields = (
-            "id", "candidate", "role", "department", "type", "mode",
+            "id", "candidate", "role", "department", "type", "mode", "category",
             "date", "duration_min", "interviewer", "meeting_link",
             "notes", "status", "created_at", "updated_at",
             "comments", "history"

@@ -32,6 +32,7 @@ export const CreateInterviewSchema = z.object({
   department: z.string().optional(),
   type: z.enum(["TECHNICAL", "HR", "MANAGERIAL", "CULTURE_FIT", "FINAL_ROUND"]),
   mode: z.enum(["ONLINE", "IN_PERSON", "PHONE"]),
+  category: z.string().optional(),
   date: z.string().refine((val) => {
     const d = new Date(val);
     return !isNaN(d.getTime()) && d > new Date();

@@ -13,6 +13,7 @@ class CreateInterviewSchema(BaseModel):
     interviewer:     Optional[str] = None
     meeting_link:    Optional[HttpUrl] = None
     notes:           Optional[str] = None
+    category:        Optional[str] = ""
 
     @field_validator("duration_min")
     def check_duration(cls, v):

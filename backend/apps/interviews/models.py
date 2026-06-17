@@ -20,6 +20,17 @@ class Status(models.TextChoices):
     COMPLETED   = "COMPLETED"
     CANCELLED   = "CANCELLED"
     RESCHEDULED = "RESCHEDULED"
+class InterviewCategory(models.Model):
+    id   = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    type = models.CharField(max_length=20, choices=InterviewType.choices)
+    name = models.CharField(max_length=100)
+
+    class Meta:
+        verbose_name_plural = "Interview Categories"
+        unique_together = ("type", "name")
+
+    def __str__(self):
+        return f"{self.type} - {self.name}"
 
 class Interview(models.Model):
     id           = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
@@ -28,6 +39,7 @@ class Interview(models.Model):
     department   = models.CharField(max_length=100, blank=True)
     type         = models.CharField(max_length=20, choices=InterviewType.choices)
     mode         = models.CharField(max_length=20, choices=InterviewMode.choices)
+    category     = models.CharField(max_length=100, blank=True, default="")
     date         = models.DateTimeField()
     duration_min = models.PositiveIntegerField(default=60)
     interviewer  = models.CharField(max_length=255, blank=True)

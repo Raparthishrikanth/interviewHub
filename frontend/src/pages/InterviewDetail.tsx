@@ -34,11 +34,12 @@ export const InterviewDetail: React.FC = () => {
     if (id) {
       fetchInterviewDetail(id).catch(() => {
         addToast("Permission denied or interview not found.", "error");
-        navigate("/dashboard");
+        const target = user?.role === "CANDIDATE" ? "/my-schedule" : (user?.role === "VIEWER" ? "/interviews" : "/dashboard");
+        navigate(target);
       });
       fetchComments(id);
     }
-  }, [id, fetchInterviewDetail, fetchComments, addToast, navigate]);
+  }, [id, fetchInterviewDetail, fetchComments, addToast, navigate, user]);
 
   if (!selectedInterview) {
     return (

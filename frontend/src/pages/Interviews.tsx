@@ -171,7 +171,14 @@ export const Interviews: React.FC = () => {
 
                     {/* Round */}
                     <td className="py-4 px-5">
-                      <span className="font-bold text-slate-800">{interview.type}</span>
+                      <span className="font-bold text-slate-800">
+                        {interview.type}
+                        {interview.category && (
+                          <span className="ml-1.5 px-1.5 py-0.5 text-[10px] font-bold bg-brand-50 text-brand-700 rounded-md border border-brand-100">
+                            {interview.category}
+                          </span>
+                        )}
+                      </span>
                       <span className="text-[10px] text-slate-500 block mt-0.5">{interview.mode}</span>
                     </td>
 
