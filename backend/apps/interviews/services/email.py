@@ -1,9 +1,12 @@
 import threading
+import logging
 from django.core.mail import EmailMultiAlternatives
 from django.template.loader import render_to_string
 from django.conf import settings
 from icalendar import Calendar, Event
 from datetime import timedelta
+
+logger = logging.getLogger(__name__)
 
 def send_html_email_async(subject, template_name, context, recipient_list, ics_data=None):
     """
@@ -31,8 +34,7 @@ def send_html_email_async(subject, template_name, context, recipient_list, ics_d
 
             msg.send()
         except Exception as e:
-            # Silence error or log it to console
-            print(f"Background email send failed: {e}")
+            logger.exception(f"Background email send failed: {e}")
 
     # Launch background thread
     threading.Thread(target=_send).start()

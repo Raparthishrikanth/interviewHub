@@ -244,3 +244,9 @@ STORAGES = {
     },
 }
 
+# Case-insensitive authentication backend
+AUTHENTICATION_BACKENDS = [
+    "apps.users.backends.CaseInsensitiveModelBackend",
+]
+
+

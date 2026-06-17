@@ -165,7 +165,7 @@ class ResendVerificationView(APIView):
             return Response({"error": "Email is required"}, status=status.HTTP_400_BAD_REQUEST)
             
         try:
-            user = User.objects.get(email=email.strip().lower())
+            user = User.objects.get(email__iexact=email.strip())
             if user.is_email_verified:
                 return Response({"message": "This email is already verified. Please log in."}, status=status.HTTP_200_OK)
             
@@ -273,7 +273,7 @@ class RequestPasswordResetView(APIView):
             return Response({"error": "Email is required"}, status=status.HTTP_400_BAD_REQUEST)
             
         try:
-            user = User.objects.get(email=email.strip().lower())
+            user = User.objects.get(email__iexact=email.strip())
             
             # Generate secure reset token (valid for 1 hour)
             from django.core import signing
