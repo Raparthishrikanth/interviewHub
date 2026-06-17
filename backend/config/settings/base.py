@@ -210,7 +210,14 @@ else:
 # Email configurations
 EMAIL_BACKEND = config("EMAIL_BACKEND", default="django.core.mail.backends.smtp.EmailBackend")
 EMAIL_HOST = config("EMAIL_HOST", default="localhost")
-EMAIL_PORT = config("EMAIL_PORT", default=1025, cast=int)
+EMAIL_PORT_val = config("EMAIL_PORT", default="1025").strip()
+if not EMAIL_PORT_val:
+    EMAIL_PORT = 1025
+else:
+    try:
+        EMAIL_PORT = int(EMAIL_PORT_val)
+    except ValueError:
+        EMAIL_PORT = 1025
 EMAIL_HOST_USER = config("EMAIL_HOST_USER", default="")
 EMAIL_HOST_PASSWORD = config("EMAIL_HOST_PASSWORD", default="")
 DEFAULT_FROM_EMAIL = config("DEFAULT_FROM_EMAIL", default="noreply@interviewhub.com")
