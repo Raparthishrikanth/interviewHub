@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { useInterviewStore } from "../stores/useInterviewStore";
 import { useUIStore } from "../stores/useUIStore";
 import { useAuthStore } from "../stores/useAuthStore";
+import { api } from "../lib/axios";
 import { Topbar } from "../components/Topbar";
 import { StatusBadge } from "../components/StatusBadge";
 import { Link } from "react-router-dom";
@@ -56,6 +57,24 @@ export const Interviews: React.FC = () => {
     }
   };
 
+  const handleExportCSV = async () => {
+    try {
+      const response = await api.get("/interviews/export/", {
+        responseType: "blob",
+      });
+      const url = window.URL.createObjectURL(new Blob([response.data]));
+      const link = document.createElement("a");
+      link.href = url;
+      link.setAttribute("download", "interviews.csv");
+      document.body.appendChild(link);
+      link.click();
+      link.parentNode?.removeChild(link);
+      addToast("CSV exported successfully!", "success");
+    } catch (err) {
+      addToast("Failed to export CSV.", "error");
+    }
+  };
+
   return (
     <div className="min-h-screen bg-slate-50 flex flex-col">
       <Topbar />
@@ -70,13 +89,13 @@ export const Interviews: React.FC = () => {
           </div>
           {isAdmin && (
             <div className="flex gap-2">
-              <a
-                href="http://localhost:8000/api/interviews/export/"
-                className="inline-flex items-center gap-2 px-4 py-2.5 text-sm font-semibold border border-slate-200 text-slate-700 bg-white hover:bg-slate-50 rounded-xl transition-all shadow-sm"
+              <button
+                onClick={handleExportCSV}
+                className="inline-flex items-center gap-2 px-4 py-2.5 text-sm font-semibold border border-slate-200 text-slate-700 bg-white hover:bg-slate-50 rounded-xl transition-all shadow-sm cursor-pointer"
               >
                 <FileSpreadsheet className="w-4 h-4 text-emerald-600" />
                 Export CSV
-              </a>
+              </button>
               <button
                 onClick={() => openModal("create_interview")}
                 className="inline-flex items-center gap-1.5 px-4 py-2.5 text-sm font-bold text-white bg-brand-600 hover:bg-brand-700 rounded-xl transition-all shadow-md shadow-brand-500/10"
