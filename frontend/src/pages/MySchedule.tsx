@@ -14,7 +14,8 @@ import {
   XCircle,
   MessageSquare,
   ChevronRight,
-  Info
+  Info,
+  FileSpreadsheet
 } from "lucide-react";
 
 import { useAuthStore } from "../stores/useAuthStore";
@@ -53,13 +54,22 @@ export const MySchedule: React.FC = () => {
             <h1 className="text-2xl font-black tracking-tight text-slate-800">My Interview Schedule</h1>
             <p className="text-slate-500 text-sm mt-0.5">Manage your scheduled rounds, comments thread, and meeting invites.</p>
           </div>
-          <button
-            onClick={() => openModal("create_interview")}
-            className="inline-flex items-center gap-1.5 px-5 py-3 text-sm font-bold text-white bg-brand-600 hover:bg-brand-700 rounded-xl transition-all shadow-md shadow-brand-500/10 self-start sm:self-auto"
-          >
-            <Plus className="w-4.5 h-4.5" />
-            Schedule Interview
-          </button>
+          <div className="flex gap-2 self-start sm:self-auto">
+            <a
+              href="http://localhost:8000/api/interviews/export/"
+              className="inline-flex items-center gap-2 px-4 py-2.5 text-sm font-semibold border border-slate-200 text-slate-700 bg-white hover:bg-slate-50 rounded-xl transition-all shadow-sm"
+            >
+              <FileSpreadsheet className="w-4 h-4 text-emerald-600" />
+              Export CSV
+            </a>
+            <button
+              onClick={() => openModal("create_interview")}
+              className="inline-flex items-center gap-1.5 px-5 py-3 text-sm font-bold text-white bg-brand-600 hover:bg-brand-700 rounded-xl transition-all shadow-md shadow-brand-500/10"
+            >
+              <Plus className="w-4.5 h-4.5" />
+              Schedule Interview
+            </button>
+          </div>
         </div>
 
         {/* Notice Info Banner */}

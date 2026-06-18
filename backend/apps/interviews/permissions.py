@@ -16,3 +16,7 @@ class IsNotViewer(BasePermission):
         if request.method in ("POST", "PATCH", "PUT", "DELETE"):
             return request.user.role != "VIEWER"
         return True
+
+class IsAdminOrCandidate(BasePermission):
+    def has_permission(self, request, view):
+        return request.user.is_authenticated and request.user.role in ("ADMIN", "CANDIDATE")

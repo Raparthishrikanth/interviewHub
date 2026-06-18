@@ -13,7 +13,7 @@ from shared.schemas import CreateInterviewSchema, UpdateStatusSchema
 from .models import Interview, Comment, HistoryLog, Status, InterviewType, InterviewCategory
 from apps.users.models import Role
 from .serializers import InterviewSerializer, CommentSerializer, InterviewCategorySerializer
-from .permissions import IsAdmin, IsCandidate, IsNotViewer
+from .permissions import IsAdmin, IsCandidate, IsNotViewer, IsAdminOrCandidate
 from .filters import InterviewFilter
 from .services.email import (
     send_interview_scheduled_email,
@@ -63,7 +63,7 @@ class InterviewViewSet(viewsets.ModelViewSet):
         elif self.action in ("stats",):
             permission_classes = [IsAuthenticated] # All authenticated users can view dashboard stats
         elif self.action in ("export",):
-            permission_classes = [IsAuthenticated, IsAdmin] # Admin only
+            permission_classes = [IsAuthenticated, IsAdminOrCandidate] # Admin and Candidate can export
         else:
             permission_classes = [IsAuthenticated] # Read list & detail
         return [permission() for permission in permission_classes]
