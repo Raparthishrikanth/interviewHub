@@ -10,6 +10,7 @@ export interface NoticeCommentType {
     name: string;
     email: string;
     role: string;
+    profile_picture?: string;
   };
   text: string;
   created_at: string;

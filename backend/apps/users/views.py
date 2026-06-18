@@ -243,10 +243,27 @@ class RecruiterPermission(BasePermission):
         if request.user.role == Role.ADMIN:
             return True
             
-        # CANDIDATE has read-only access (GET/HEAD/OPTIONS) if allowed
+        # CANDIDATE has read-only access (GET/HEAD/OPTIONS), create access (POST), and edit/delete access (subject to object-level check)
         if request.user.role == Role.CANDIDATE:
             if request.method in ("GET", "HEAD", "OPTIONS"):
-                return getattr(request.user, "can_view_recruiters", False)
+                return getattr(request.user, "can_view_recruiters", False) or request.user.has_perm("users.view_recruiter")
+            elif request.method == "POST":
+                return request.user.has_perm("users.add_recruiter")
+            elif request.method in ("PUT", "PATCH", "DELETE"):
+                return True
+                
+        return False
+
+    def has_object_permission(self, request, view, obj):
+        # ADMIN has full access
+        if request.user.role == Role.ADMIN:
+            return True
+            
+        if request.user.role == Role.CANDIDATE:
+            if request.method in ("PUT", "PATCH", "DELETE"):
+                return obj.created_by == request.user
+            elif request.method in ("GET", "HEAD", "OPTIONS"):
+                return getattr(request.user, "can_view_recruiters", False) or request.user.has_perm("users.view_recruiter")
                 
         return False
 
@@ -254,6 +271,9 @@ class RecruiterViewSet(viewsets.ModelViewSet):
     queryset = Recruiter.objects.all().order_by("name")
     serializer_class = RecruiterSerializer
     permission_classes = [IsAuthenticated, RecruiterPermission]
+
+    def perform_create(self, serializer):
+        serializer.save(created_by=self.request.user)
 
 class CandidateManagementViewSet(viewsets.ModelViewSet):
     """

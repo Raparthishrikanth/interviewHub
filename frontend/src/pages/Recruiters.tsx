@@ -40,6 +40,7 @@ export const Recruiters: React.FC = () => {
 
   const isAdmin = user?.role === "ADMIN";
   const hasAccess = user?.role === "ADMIN" || !!user?.can_view_recruiters;
+  const canAddRecruiter = isAdmin || !!user?.can_add_recruiter;
 
   // Admin tab navigation: "directory" | "access"
   const [activeTab, setActiveTab] = useState<"directory" | "access">("directory");
@@ -206,7 +207,7 @@ export const Recruiters: React.FC = () => {
             </p>
           </div>
 
-          {isAdmin && !showForm && (
+          {canAddRecruiter && !showForm && (
             <button
               onClick={openCreateForm}
               className="inline-flex items-center gap-1.5 px-4 py-2.5 text-sm font-bold text-white bg-brand-600 hover:bg-brand-700 rounded-xl transition-all shadow-md shadow-brand-500/10 self-start md:self-auto"
@@ -252,7 +253,7 @@ export const Recruiters: React.FC = () => {
         )}
 
         {/* Modal / Inline Add & Edit Form */}
-        {isAdmin && showForm && (
+        {(canAddRecruiter || (editingRecruiter && (isAdmin || editingRecruiter.created_by === user?.id))) && showForm && (
           <div className="bg-white border border-slate-200/80 p-6 rounded-3xl shadow-premium max-w-xl animate-fade-in space-y-4">
             <div className="flex items-center justify-between border-b border-slate-100 pb-3">
               <h3 className="font-extrabold text-slate-800 text-base">
@@ -406,7 +407,7 @@ export const Recruiters: React.FC = () => {
                       Call Recruiter
                     </a>
 
-                    {isAdmin && (
+                    {(isAdmin || recruiter.created_by === user?.id) && (
                       <div className="flex items-center gap-1">
                         <button
                           onClick={() => openEditForm(recruiter)}
@@ -480,9 +481,17 @@ export const Recruiters: React.FC = () => {
                       <tr key={candidate.id} className="hover:bg-slate-50/50 transition-colors">
                         <td className="py-4 px-6">
                           <div className="flex items-center gap-2.5">
-                            <span className="flex h-8 w-8 items-center justify-center rounded-full bg-slate-100 text-slate-600 font-bold text-xs">
-                              {candidate.name.charAt(0).toUpperCase()}
-                            </span>
+                            {candidate.profile_picture ? (
+                              <img
+                                src={candidate.profile_picture}
+                                alt={candidate.name}
+                                className="h-8 w-8 rounded-full object-cover shadow-sm border border-slate-100"
+                              />
+                            ) : (
+                              <span className="flex h-8 w-8 items-center justify-center rounded-full bg-slate-100 text-slate-600 font-bold text-xs">
+                                {candidate.name.charAt(0).toUpperCase()}
+                              </span>
+                            )}
                             <span className="text-sm font-bold text-slate-800">{candidate.name}</span>
                           </div>
                         </td>

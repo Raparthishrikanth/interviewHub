@@ -15,10 +15,15 @@ class CustomTokenObtainPairSerializer(TokenObtainPairSerializer):
         return data
 
 class UserSerializer(serializers.ModelSerializer):
+    can_add_recruiter = serializers.SerializerMethodField()
+
     class Meta:
         model = User
-        fields = ("id", "name", "email", "role", "bio", "facebook_link", "linkedin_link", "github_link", "resume", "can_view_recruiters", "created_at")
-        read_only_fields = ("id", "role", "created_at")
+        fields = ("id", "name", "email", "role", "bio", "facebook_link", "linkedin_link", "github_link", "resume", "can_view_recruiters", "can_add_recruiter", "profile_picture", "created_at")
+        read_only_fields = ("id", "role", "created_at", "can_add_recruiter")
+
+    def get_can_add_recruiter(self, obj):
+        return obj.role == Role.ADMIN or obj.has_perm("users.add_recruiter")
 
     def validate(self, attrs):
         # Prevent non-admin users from changing their own can_view_recruiters flag
@@ -51,7 +56,9 @@ class RegisterSerializer(serializers.ModelSerializer):
         return user
 
 class RecruiterSerializer(serializers.ModelSerializer):
+    created_by = serializers.PrimaryKeyRelatedField(read_only=True)
+
     class Meta:
         model = Recruiter
-        fields = ("id", "name", "company", "number", "created_at")
-        read_only_fields = ("id", "created_at")
+        fields = ("id", "name", "company", "number", "created_by", "created_at")
+        read_only_fields = ("id", "created_by", "created_at")

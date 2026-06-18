@@ -212,9 +212,17 @@ export const Topbar: React.FC = () => {
             className="flex items-center gap-2 bg-slate-100/70 hover:bg-slate-200/55 border border-slate-200/50 p-1 md:pr-3 rounded-full transition-all cursor-pointer outline-none animate-fade-in"
             title="View Profile"
           >
-            <span className="flex h-8 w-8 items-center justify-center rounded-full bg-brand-600 text-white font-bold text-sm shadow-inner">
-              {user.name.charAt(0).toUpperCase()}
-            </span>
+            {user.profile_picture ? (
+              <img
+                src={user.profile_picture}
+                alt={user.name}
+                className="h-8 w-8 object-cover rounded-full shadow-inner"
+              />
+            ) : (
+              <span className="flex h-8 w-8 items-center justify-center rounded-full bg-brand-600 text-white font-bold text-sm shadow-inner">
+                {user.name.charAt(0).toUpperCase()}
+              </span>
+            )}
             <div className="text-left hidden md:block">
               <p className="text-xs font-bold text-slate-800 leading-none">{user.name}</p>
               <p className="text-[10px] text-slate-500 leading-none mt-0.5 uppercase tracking-wider font-semibold">

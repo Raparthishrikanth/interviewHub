@@ -339,9 +339,17 @@ export const Notices: React.FC = () => {
                         const canDelete = isAdmin || isAuthor;
                         return (
                           <div key={comment.id} className="flex gap-2.5 items-start text-xs animate-fade-in">
-                            <span className="flex h-7 w-7 items-center justify-center rounded-full bg-brand-100 text-brand-700 font-black flex-shrink-0 mt-0.5 shadow-sm">
-                              {comment.author?.name.charAt(0).toUpperCase()}
-                            </span>
+                            {comment.author?.profile_picture ? (
+                              <img
+                                src={comment.author.profile_picture}
+                                alt={comment.author.name}
+                                className="h-7 w-7 rounded-full object-cover flex-shrink-0 mt-0.5 shadow-sm border border-slate-100"
+                              />
+                            ) : (
+                              <span className="flex h-7 w-7 items-center justify-center rounded-full bg-brand-100 text-brand-700 font-black flex-shrink-0 mt-0.5 shadow-sm">
+                                {comment.author?.name.charAt(0).toUpperCase()}
+                              </span>
+                            )}
                             <div className="flex-grow bg-slate-50 border border-slate-150 p-2.5 rounded-2xl relative">
                               <div className="flex items-center justify-between gap-3">
                                 <span className="font-bold text-slate-800">{comment.author?.name}</span>

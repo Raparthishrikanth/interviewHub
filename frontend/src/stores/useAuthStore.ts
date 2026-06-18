@@ -13,6 +13,8 @@ export interface UserProfile {
   github_link?: string;
   resume?: string; // Serialized absolute download URL
   can_view_recruiters?: boolean;
+  can_add_recruiter?: boolean;
+  profile_picture?: string;
   created_at: string;
 }
 

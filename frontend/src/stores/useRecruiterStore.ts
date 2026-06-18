@@ -6,6 +6,7 @@ export interface Recruiter {
   name: string;
   company: string;
   number: string;
+  created_by?: string;
   created_at: string;
 }
 
@@ -14,6 +15,7 @@ export interface Candidate {
   name: string;
   email: string;
   can_view_recruiters: boolean;
+  profile_picture?: string;
   created_at: string;
 }
 

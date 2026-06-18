@@ -42,6 +42,7 @@ class User(AbstractBaseUser, PermissionsMixin):
     linkedin_link = models.URLField(blank=True, default="")
     github_link = models.URLField(blank=True, default="")
     resume = models.FileField(upload_to="resumes/", blank=True, null=True)
+    profile_picture = models.FileField(upload_to="profile_pictures/", blank=True, null=True)
     can_view_recruiters = models.BooleanField(default=False)
 
     USERNAME_FIELD = "email"
@@ -57,6 +58,13 @@ class Recruiter(models.Model):
     name = models.CharField(max_length=255)
     company = models.CharField(max_length=255)
     number = models.CharField(max_length=50)
+    created_by = models.ForeignKey(
+        "User",
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name="created_recruiters"
+    )
     created_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):

@@ -27,6 +27,8 @@ export const ProfileModal: React.FC = () => {
   const [linkedin, setLinkedin] = useState("");
   const [github, setGithub] = useState("");
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
+  const [profilePicFile, setProfilePicFile] = useState<File | null>(null);
+  const [profilePicPreview, setProfilePicPreview] = useState<string | null>(null);
 
   // Password change states
   const [showPasswordChange, setShowPasswordChange] = useState(false);
@@ -48,6 +50,8 @@ export const ProfileModal: React.FC = () => {
       setLinkedin(user.linkedin_link || "");
       setGithub(user.github_link || "");
       setSelectedFile(null);
+      setProfilePicFile(null);
+      setProfilePicPreview(null);
       setIsEditMode(false);
     }
   }, [isOpen, user]);
@@ -65,6 +69,18 @@ export const ProfileModal: React.FC = () => {
     }
   };
 
+  const handleProfilePicChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files && e.target.files[0]) {
+      const file = e.target.files[0];
+      if (file.size > 2 * 1024 * 1024) {
+        addToast("Profile picture must be under 2MB.", "error");
+        return;
+      }
+      setProfilePicFile(file);
+      setProfilePicPreview(URL.createObjectURL(file));
+    }
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
@@ -76,6 +92,10 @@ export const ProfileModal: React.FC = () => {
     
     if (selectedFile) {
       formData.append("resume", selectedFile);
+    }
+
+    if (profilePicFile) {
+      formData.append("profile_picture", profilePicFile);
     }
 
     try {
@@ -126,7 +146,7 @@ export const ProfileModal: React.FC = () => {
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm">
+    <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm">
       <div className="relative w-full max-w-lg bg-white rounded-3xl shadow-2xl border border-slate-100 flex flex-col max-h-[90vh] overflow-hidden animate-fade-in">
         
         {/* Header */}
@@ -148,14 +168,51 @@ export const ProfileModal: React.FC = () => {
           
           {/* Avatar and Identity */}
           <div className="flex items-center gap-4 bg-slate-50/70 border border-slate-150/40 p-4 rounded-2xl">
-            <span className="flex h-14 w-14 items-center justify-center rounded-2xl bg-brand-600 text-white font-black text-xl shadow-md">
-              {user.name.charAt(0).toUpperCase()}
-            </span>
-            <div className="space-y-0.5">
-              <h3 className="font-extrabold text-slate-800 text-base">{user.name}</h3>
-              <p className="text-xs text-slate-500 flex items-center gap-1">
-                <Mail className="w-3.5 h-3.5" />
-                {user.email}
+            {isEditMode ? (
+              <div className="relative group cursor-pointer flex-shrink-0 h-14 w-14 rounded-2xl overflow-hidden shadow-md bg-brand-600">
+                {profilePicPreview || user.profile_picture ? (
+                  <img
+                    src={profilePicPreview || user.profile_picture}
+                    alt={user.name}
+                    className="h-14 w-14 object-cover group-hover:opacity-75 transition-opacity"
+                  />
+                ) : (
+                  <span className="flex h-14 w-14 items-center justify-center text-white font-black text-xl group-hover:opacity-75 transition-opacity">
+                    {user.name.charAt(0).toUpperCase()}
+                  </span>
+                )}
+                <div className="absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+                  <span className="text-[10px] text-white font-bold text-center leading-tight">Change<br/>Photo</span>
+                </div>
+                <input
+                  type="file"
+                  accept="image/*"
+                  onChange={handleProfilePicChange}
+                  className="absolute inset-0 opacity-0 cursor-pointer"
+                  title="Change profile picture"
+                />
+              </div>
+            ) : (
+              // View mode avatar
+              <div className="flex-shrink-0">
+                {user.profile_picture ? (
+                  <img
+                    src={user.profile_picture}
+                    alt={user.name}
+                    className="h-14 w-14 object-cover rounded-2xl shadow-md"
+                  />
+                ) : (
+                  <span className="flex h-14 w-14 items-center justify-center rounded-2xl bg-brand-600 text-white font-black text-xl shadow-md">
+                    {user.name.charAt(0).toUpperCase()}
+                  </span>
+                )}
+              </div>
+            )}
+            <div className="space-y-0.5 overflow-hidden">
+              <h3 className="font-extrabold text-slate-800 text-base truncate">{user.name}</h3>
+              <p className="text-xs text-slate-500 flex items-center gap-1 truncate">
+                <Mail className="w-3.5 h-3.5 flex-shrink-0" />
+                <span className="truncate">{user.email}</span>
               </p>
               <span className="inline-flex items-center px-2 py-0.5 text-[9px] font-bold text-brand-700 bg-brand-50 rounded-full uppercase tracking-wider mt-1.5 border border-brand-100">
                 {user.role}

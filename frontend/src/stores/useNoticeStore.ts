@@ -12,6 +12,7 @@ export interface Notice {
     name: string;
     email: string;
     role: string;
+    profile_picture?: string;
   };
   created_at: string;
   updated_at: string;

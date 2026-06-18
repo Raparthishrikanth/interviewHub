@@ -7,6 +7,7 @@ import { useUIStore } from "../stores/useUIStore";
 import { Topbar } from "../components/Topbar";
 import { StatusBadge } from "../components/StatusBadge";
 import { Footer } from "../components/Footer";
+import { useRecruiterStore } from "../stores/useRecruiterStore";
 import {
   Calendar,
   Video,
@@ -16,7 +17,9 @@ import {
   Trash2,
   Send,
   History,
-  Info
+  Info,
+  ShieldCheck,
+  ShieldX
 } from "lucide-react";
 
 export const InterviewDetail: React.FC = () => {
@@ -25,6 +28,7 @@ export const InterviewDetail: React.FC = () => {
   const { comments, fetchComments, addComment, deleteComment } = useCommentStore();
   const { user } = useAuthStore();
   const { addToast } = useUIStore();
+  const { toggleCandidateAccess } = useRecruiterStore();
   const navigate = useNavigate();
 
   const [commentText, setCommentText] = useState("");
@@ -93,6 +97,20 @@ export const InterviewDetail: React.FC = () => {
     }
   };
 
+  const handleToggleRecruiterAccess = async () => {
+    if (selectedInterview?.candidate?.id) {
+      try {
+        await toggleCandidateAccess(selectedInterview.candidate.id, !selectedInterview.candidate.can_view_recruiters);
+        addToast("Candidate recruiter access updated successfully!", "success");
+        if (id) {
+          fetchInterviewDetail(id);
+        }
+      } catch (err) {
+        addToast("Failed to update candidate access.", "error");
+      }
+    }
+  };
+
   const isAdmin = user?.role === "ADMIN";
   const isViewer = user?.role === "VIEWER";
   const canComment = !isViewer;
@@ -125,11 +143,44 @@ export const InterviewDetail: React.FC = () => {
               
               {/* Header block */}
               <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4 border-b border-slate-100 pb-6">
-                <div>
-                  <h2 className="text-xl sm:text-2xl font-black text-slate-800 tracking-tight">
-                    {selectedInterview.candidate?.name}
-                  </h2>
-                  <p className="text-sm font-medium text-slate-500 mt-1">
+                <div className="space-y-2">
+                  <div className="flex flex-wrap items-center gap-3">
+                    <h2 className="text-xl sm:text-2xl font-black text-slate-800 tracking-tight">
+                      {selectedInterview.candidate?.name}
+                    </h2>
+                    {isAdmin && selectedInterview.candidate && (
+                      <div className="inline-flex items-center gap-2 px-3 py-1.5 bg-slate-50 border border-slate-200 rounded-xl text-[11px] font-bold shadow-sm">
+                        <span className="text-slate-500">Recruiter Directory Access:</span>
+                        <button
+                          type="button"
+                          onClick={handleToggleRecruiterAccess}
+                          className={`relative inline-flex h-5 w-9 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out outline-none ${
+                            selectedInterview.candidate.can_view_recruiters ? "bg-brand-600" : "bg-slate-200"
+                          }`}
+                          role="switch"
+                          aria-checked={selectedInterview.candidate.can_view_recruiters}
+                        >
+                          <span
+                            className={`pointer-events-none inline-block h-4 w-4 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out ${
+                              selectedInterview.candidate.can_view_recruiters ? "translate-x-4" : "translate-x-0"
+                            }`}
+                          />
+                        </button>
+                        <span className="w-16">
+                          {selectedInterview.candidate.can_view_recruiters ? (
+                            <span className="text-brand-600 flex items-center gap-0.5">
+                              <ShieldCheck className="w-3.5 h-3.5" /> Allowed
+                            </span>
+                          ) : (
+                            <span className="text-slate-400 flex items-center gap-0.5">
+                              <ShieldX className="w-3.5 h-3.5" /> Locked
+                            </span>
+                          )}
+                        </span>
+                      </div>
+                    )}
+                  </div>
+                  <p className="text-sm font-medium text-slate-500">
                     Applying for <span className="font-bold text-slate-700">{selectedInterview.role}</span> &bull; {selectedInterview.department || "No department"}
                   </p>
                 </div>
@@ -243,9 +294,17 @@ export const InterviewDetail: React.FC = () => {
                   const canDelete = isAdmin || isAuthor;
                   return (
                     <div key={comment.id} className="flex gap-3 items-start animate-fade-in">
-                      <span className="flex h-8 w-8 items-center justify-center rounded-full bg-brand-100 text-brand-700 font-bold text-xs flex-shrink-0 shadow-sm mt-0.5">
-                        {comment.author?.name.charAt(0).toUpperCase()}
-                      </span>
+                      {comment.author?.profile_picture ? (
+                        <img
+                          src={comment.author.profile_picture}
+                          alt={comment.author.name}
+                          className="h-8 w-8 rounded-full object-cover flex-shrink-0 mt-0.5 shadow-sm border border-slate-100"
+                        />
+                      ) : (
+                        <span className="flex h-8 w-8 items-center justify-center rounded-full bg-brand-100 text-brand-700 font-bold text-xs flex-shrink-0 shadow-sm mt-0.5">
+                          {comment.author?.name.charAt(0).toUpperCase()}
+                        </span>
+                      )}
                       <div className="flex-grow bg-slate-50 border border-slate-150/60 p-3 rounded-2xl relative">
                         <div className="flex items-center justify-between gap-4">
                           <span className="text-xs font-bold text-slate-800">{comment.author?.name}</span>

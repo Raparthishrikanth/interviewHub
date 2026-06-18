@@ -9,6 +9,7 @@ export interface CommentType {
     name: string;
     email: string;
     role: string;
+    profile_picture?: string;
   };
   text: string;
   created_at: string;
@@ -28,6 +29,8 @@ export interface Interview {
     name: string;
     email: string;
     role: string;
+    can_view_recruiters?: boolean;
+    profile_picture?: string;
   };
   role: string;
   department: string;
