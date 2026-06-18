@@ -44,6 +44,7 @@ export const CreateInterviewSchema = z.object({
     z.number().min(15, "Duration must be at least 15 mins").max(240, "Duration cannot exceed 240 mins")
   ),
   interviewer: z.string().optional(),
+  interview_handler: z.string().optional(),
   meeting_link: z.string().url("Invalid URL").or(z.literal("")).optional(),
   notes: z.string().max(1000, "Notes cannot exceed 1000 characters").optional(),
 });

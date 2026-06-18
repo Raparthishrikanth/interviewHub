@@ -242,6 +242,11 @@ export const InterviewDetail: React.FC = () => {
                     <p className="text-xs text-slate-500 mt-0.5 uppercase font-semibold">
                       {selectedInterview.mode} MODE
                     </p>
+                    {selectedInterview.interview_handler && (
+                      <p className="text-xs text-slate-500 mt-1 font-semibold">
+                        Handler: <span className="text-slate-700 font-bold">{selectedInterview.interview_handler}</span>
+                      </p>
+                    )}
                   </div>
                 </div>
 

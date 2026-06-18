@@ -248,6 +248,11 @@ export const Calendar: React.FC = () => {
                         <p className="text-[10px] text-slate-300">
                           Role: <span className="text-white">{interview.role}</span>
                         </p>
+                        {interview.interview_handler && (
+                          <p className="text-[10px] text-slate-300">
+                            Handler: <span className="text-white">{interview.interview_handler}</span>
+                          </p>
+                        )}
                         <p className="text-[10px] text-slate-300">
                           Time:{" "}
                           <span className="text-white">
@@ -331,6 +336,12 @@ export const Calendar: React.FC = () => {
                       <span className="flex items-center gap-1">
                         <User className="w-3.5 h-3.5 text-slate-400" />
                         Interviewer: {interview.interviewer}
+                      </span>
+                    )}
+                    {interview.interview_handler && (
+                      <span className="flex items-center gap-1">
+                        <User className="w-3.5 h-3.5 text-slate-400" />
+                        Handler: {interview.interview_handler}
                       </span>
                     )}
                     <span className="text-slate-400">•</span>

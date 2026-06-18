@@ -29,7 +29,7 @@ class InterviewSerializer(serializers.ModelSerializer):
         model = Interview
         fields = (
             "id", "candidate", "role", "department", "type", "mode", "category",
-            "date", "duration_min", "interviewer", "meeting_link",
+            "date", "duration_min", "interviewer", "interview_handler", "meeting_link",
             "notes", "status", "created_at", "updated_at",
             "comments", "history"
         )

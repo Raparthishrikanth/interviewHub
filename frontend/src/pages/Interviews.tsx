@@ -196,19 +196,24 @@ export const Interviews: React.FC = () => {
 
                     {/* Interviewer */}
                     <td className="py-4 px-5">
-                      {interview.interviewer ? (
-                        <div className="flex flex-col">
+                      <div className="flex flex-col">
+                        {interview.interviewer ? (
                           <span className="font-semibold text-slate-700">{interview.interviewer}</span>
-                          {interview.meeting_link && (
-                            <a href={interview.meeting_link} target="_blank" rel="noreferrer" className="text-[10px] text-brand-600 font-bold hover:underline flex items-center gap-0.5 mt-0.5">
-                              <Video className="w-3 h-3" />
-                              Join Meeting
-                            </a>
-                          )}
-                        </div>
-                      ) : (
-                        <span className="text-xs text-slate-400 italic">Not assigned</span>
-                      )}
+                        ) : (
+                          <span className="text-xs text-slate-400 italic">Not assigned</span>
+                        )}
+                        {interview.interview_handler && (
+                          <span className="text-[10px] text-slate-500 font-semibold mt-0.5">
+                            Handler: {interview.interview_handler}
+                          </span>
+                        )}
+                        {interview.meeting_link && (
+                          <a href={interview.meeting_link} target="_blank" rel="noreferrer" className="text-[10px] text-brand-600 font-bold hover:underline flex items-center gap-0.5 mt-0.5">
+                            <Video className="w-3 h-3" />
+                            Join Meeting
+                          </a>
+                        )}
+                      </div>
                     </td>
 
                     {/* Status */}

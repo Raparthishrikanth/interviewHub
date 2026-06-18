@@ -116,6 +116,12 @@ export const MySchedule: React.FC = () => {
                         Interviewer: {interview.interviewer}
                       </span>
                     )}
+                    {interview.interview_handler && (
+                      <span className="flex items-center gap-1">
+                        <User className="w-4 h-4 text-slate-400" />
+                        Handler: {interview.interview_handler}
+                      </span>
+                    )}
                   </div>
 
                   {/* Join Room */}

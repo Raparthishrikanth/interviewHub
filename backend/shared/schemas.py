@@ -10,8 +10,9 @@ class CreateInterviewSchema(BaseModel):
     mode:            Literal["ONLINE", "IN_PERSON", "PHONE"]
     date:            datetime
     duration_min:    int = 60
-    interviewer:     Optional[str] = None
-    meeting_link:    Optional[HttpUrl] = None
+    interviewer:       Optional[str] = None
+    interview_handler: Optional[str] = None
+    meeting_link:      Optional[HttpUrl] = None
     notes:           Optional[str] = None
     category:        Optional[str] = ""
 

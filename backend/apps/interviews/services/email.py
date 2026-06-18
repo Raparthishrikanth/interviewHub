@@ -52,7 +52,11 @@ def generate_ics_file(interview):
         event.add("summary", f"{interview.type} Interview - {interview.role}")
         event.add("dtstart", interview.date)
         event.add("dtend", interview.date + timedelta(minutes=interview.duration_min))
-        event.add("description", f"Interviewer: {interview.interviewer}\nNotes: {interview.notes}")
+        desc = f"Interviewer: {interview.interviewer}"
+        if interview.interview_handler:
+            desc += f"\nInterview Handler: {interview.interview_handler}"
+        desc += f"\nNotes: {interview.notes}"
+        event.add("description", desc)
         if interview.meeting_link:
             event.add("location", interview.meeting_link)
 
@@ -71,6 +75,7 @@ def send_interview_scheduled_email(interview):
         "date": interview.date,
         "duration_min": interview.duration_min,
         "interviewer": interview.interviewer,
+        "interview_handler": interview.interview_handler,
         "meeting_link": interview.meeting_link,
         "notes": interview.notes,
         "frontend_url": settings.FRONTEND_URL
@@ -104,6 +109,7 @@ def send_interview_status_changed_email(interview, old_status, new_status):
         "new_status": new_status,
         "date": interview.date,
         "interviewer": interview.interviewer,
+        "interview_handler": interview.interview_handler,
         "meeting_link": interview.meeting_link,
         "frontend_url": settings.FRONTEND_URL
     }

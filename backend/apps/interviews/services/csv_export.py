@@ -10,7 +10,7 @@ def generate_interview_csv_rows(interviews):
     # CSV headers as requested
     headers = [
         "ID", "Candidate Name", "Email", "Role", "Department", "Type", 
-        "Mode", "Date", "Time", "Duration (min)", "Interviewer", "Meeting Link", 
+        "Mode", "Date", "Time", "Duration (min)", "Interviewer", "Interview Handler", "Meeting Link", 
         "Status", "Scheduled At"
     ]
     
@@ -35,6 +35,7 @@ def generate_interview_csv_rows(interviews):
             local_time,
             str(interview.duration_min),
             interview.interviewer,
+            interview.interview_handler,
             interview.meeting_link,
             interview.status,
             scheduled_at

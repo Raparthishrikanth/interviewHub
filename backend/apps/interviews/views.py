@@ -47,7 +47,7 @@ class InterviewViewSet(viewsets.ModelViewSet):
     serializer_class = InterviewSerializer
     filter_backends = (DjangoFilterBackend, filters.SearchFilter, filters.OrderingFilter)
     filterset_class = InterviewFilter
-    search_fields = ("role", "interviewer", "candidate__name", "candidate__email")
+    search_fields = ("role", "interviewer", "interview_handler", "candidate__name", "candidate__email")
     ordering_fields = ("date", "created_at")
 
     def get_permissions(self):
@@ -110,6 +110,7 @@ class InterviewViewSet(viewsets.ModelViewSet):
                 date=schema.date,
                 duration_min=schema.duration_min,
                 interviewer=schema.interviewer or "",
+                interview_handler=schema.interview_handler or "",
                 meeting_link=str(schema.meeting_link) if schema.meeting_link else "",
                 notes=schema.notes or "",
                 status=Status.PENDING

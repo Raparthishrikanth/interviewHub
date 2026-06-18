@@ -48,6 +48,12 @@
                         <td style="padding-bottom: 10px; font-size: 14px; color: #0f172a;">{{ interviewer }}</td>
                     </tr>
                     {% endif %}
+                    {% if interview_handler %}
+                    <tr>
+                        <td style="padding-bottom: 10px; font-size: 14px; color: #64748b; font-weight: 600;">Interview Handler:</td>
+                        <td style="padding-bottom: 10px; font-size: 14px; color: #0f172a;">{{ interview_handler }}</td>
+                    </tr>
+                    {% endif %}
                     {% if meeting_link %}
                     <tr>
                         <td style="font-size: 14px; color: #64748b; font-weight: 600;">Meeting Link:</td>

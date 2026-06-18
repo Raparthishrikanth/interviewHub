@@ -34,6 +34,7 @@ export const InterviewModal: React.FC = () => {
       date: "",
       duration_min: 60,
       interviewer: "",
+      interview_handler: "",
       meeting_link: "",
       notes: "",
     },
@@ -81,6 +82,7 @@ export const InterviewModal: React.FC = () => {
           date: formattedDate,
           duration_min: modalData.duration_min || 60,
           interviewer: modalData.interviewer || "",
+          interview_handler: modalData.interview_handler || "",
           meeting_link: modalData.meeting_link || "",
           notes: modalData.notes || "",
         });
@@ -96,6 +98,7 @@ export const InterviewModal: React.FC = () => {
           date: "",
           duration_min: 60,
           interviewer: "",
+          interview_handler: "",
           meeting_link: "",
           notes: "",
         });
@@ -285,7 +288,7 @@ export const InterviewModal: React.FC = () => {
             </div>
           </div>
 
-          {/* Date & Time and Interviewer Name */}
+          {/* Date & Time and Meeting Link */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
               <label className="block text-xs font-bold uppercase tracking-wider text-slate-500 mb-2">
@@ -306,6 +309,27 @@ export const InterviewModal: React.FC = () => {
 
             <div>
               <label className="block text-xs font-bold uppercase tracking-wider text-slate-500 mb-2">
+                Meeting Link
+              </label>
+              <div className="relative">
+                <Video className="absolute left-3 top-3 w-4 h-4 text-slate-400" />
+                <input
+                  type="text"
+                  {...register("meeting_link")}
+                  className="w-full pl-10 pr-4 py-2 text-sm border border-slate-200 rounded-xl focus:border-brand-500 focus:ring-1 focus:ring-brand-500 disabled:bg-slate-100 disabled:text-slate-500 outline-none transition-all"
+                  placeholder="https://zoom.us/j/..."
+                />
+              </div>
+              {errors.meeting_link && (
+                <p className="text-rose-500 text-xs mt-1 font-semibold">{errors.meeting_link.message as string}</p>
+              )}
+            </div>
+          </div>
+
+          {/* Interviewer Name and Interview Handler Name */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+              <label className="block text-xs font-bold uppercase tracking-wider text-slate-500 mb-2">
                 Interviewer Name
               </label>
               <input
@@ -315,25 +339,18 @@ export const InterviewModal: React.FC = () => {
                 placeholder="Jane Smith"
               />
             </div>
-          </div>
 
-          {/* Meeting Link */}
-          <div>
-            <label className="block text-xs font-bold uppercase tracking-wider text-slate-500 mb-2">
-              Meeting Link
-            </label>
-            <div className="relative">
-              <Video className="absolute left-3 top-3 w-4 h-4 text-slate-400" />
+            <div>
+              <label className="block text-xs font-bold uppercase tracking-wider text-slate-500 mb-2">
+                Interview Handler Name
+              </label>
               <input
                 type="text"
-                {...register("meeting_link")}
-                className="w-full pl-10 pr-4 py-2 text-sm border border-slate-200 rounded-xl focus:border-brand-500 focus:ring-1 focus:ring-brand-500 disabled:bg-slate-100 disabled:text-slate-500 outline-none transition-all"
-                placeholder="https://zoom.us/j/..."
+                {...register("interview_handler")}
+                className="w-full px-4 py-2 text-sm border border-slate-200 rounded-xl focus:border-brand-500 focus:ring-1 focus:ring-brand-500 disabled:bg-slate-100 disabled:text-slate-500 outline-none transition-all"
+                placeholder="Jane Doe"
               />
             </div>
-            {errors.meeting_link && (
-              <p className="text-rose-500 text-xs mt-1 font-semibold">{errors.meeting_link.message as string}</p>
-            )}
           </div>
 
           {/* Notes */}

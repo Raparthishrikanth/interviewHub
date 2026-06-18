@@ -40,6 +40,7 @@ export interface Interview {
   date: string;
   duration_min: number;
   interviewer: string;
+  interview_handler?: string;
   meeting_link: string;
   notes: string;
   status: "PENDING" | "CONFIRMED" | "COMPLETED" | "CANCELLED" | "RESCHEDULED";
