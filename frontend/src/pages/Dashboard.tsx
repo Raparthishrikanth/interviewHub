@@ -5,6 +5,7 @@ import { Topbar } from "../components/Topbar";
 import { StatusBadge } from "../components/StatusBadge";
 import { Link } from "react-router-dom";
 import { Footer } from "../components/Footer";
+import { api } from "../lib/axios";
 import {
   Users,
   Clock,
@@ -17,7 +18,25 @@ import {
 
 export const Dashboard: React.FC = () => {
   const { interviews, stats, fetchInterviews, fetchStats } = useInterviewStore();
-  const { openModal } = useUIStore();
+  const { openModal, addToast } = useUIStore();
+
+  const handleExportCSV = async () => {
+    try {
+      const response = await api.get("/interviews/export/", {
+        responseType: "blob",
+      });
+      const url = window.URL.createObjectURL(new Blob([response.data]));
+      const link = document.createElement("a");
+      link.href = url;
+      link.setAttribute("download", "interviews.csv");
+      document.body.appendChild(link);
+      link.click();
+      link.parentNode?.removeChild(link);
+      addToast("CSV exported successfully!", "success");
+    } catch (err) {
+      addToast("Failed to export CSV.", "error");
+    }
+  };
 
   useEffect(() => {
     // Fetch initial interviews list and aggregate dashboard stats
@@ -62,13 +81,13 @@ export const Dashboard: React.FC = () => {
             <p className="text-slate-500 text-sm mt-0.5">Real-time scheduling aggregates, queues, and notice boards.</p>
           </div>
           <div className="flex gap-2">
-            <a
-              href="http://localhost:8000/api/interviews/export/"
-              className="inline-flex items-center gap-2 px-4 py-2.5 text-sm font-semibold border border-slate-200 text-slate-700 bg-white hover:bg-slate-50 rounded-xl transition-all shadow-sm"
+            <button
+              onClick={handleExportCSV}
+              className="inline-flex items-center gap-2 px-4 py-2.5 text-sm font-semibold border border-slate-200 text-slate-700 bg-white hover:bg-slate-50 rounded-xl transition-all shadow-sm cursor-pointer"
             >
               <FileSpreadsheet className="w-4 h-4 text-emerald-600" />
               Export CSV
-            </a>
+            </button>
             <button
               onClick={() => openModal("create_interview")}
               className="inline-flex items-center gap-1.5 px-4 py-2.5 text-sm font-bold text-white bg-brand-600 hover:bg-brand-700 rounded-xl transition-all shadow-md shadow-brand-500/10"
