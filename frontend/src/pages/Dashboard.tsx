@@ -15,8 +15,7 @@ import {
   TrendingUp,
   FileSpreadsheet,
   Calendar,
-  Video,
-  User
+  Video
 } from "lucide-react";
 
 export const Dashboard: React.FC = () => {

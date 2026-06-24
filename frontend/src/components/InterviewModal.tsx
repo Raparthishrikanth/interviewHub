@@ -22,7 +22,7 @@ export const InterviewModal: React.FC = () => {
     reset,
     watch,
     formState: { errors },
-  } = useForm({
+  } = useForm<any>({
     resolver: (values, context, options) => {
       const schema = isEdit ? EditInterviewSchema : CreateInterviewSchema;
       return zodResolver(schema)(values, context, options);
