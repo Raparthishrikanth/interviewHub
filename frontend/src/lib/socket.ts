@@ -29,6 +29,11 @@ export const connectWebSocket = () => {
             useInterviewStore.getState().addInterviewLocally(payload.interview);
           }
           break;
+        case "interview_updated":
+          if (payload.interview) {
+            useInterviewStore.getState().updateInterviewLocally(payload.interview);
+          }
+          break;
         case "interview_status_changed":
           if (payload.interviewId && payload.newStatus) {
             useInterviewStore.getState().updateStatusLocally(payload.interviewId, payload.newStatus);

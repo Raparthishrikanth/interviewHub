@@ -4,7 +4,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useUIStore } from "../stores/useUIStore";
 import { useInterviewStore } from "../stores/useInterviewStore";
 import { useAuthStore } from "../stores/useAuthStore";
-import { CreateInterviewSchema } from "../lib/schemas";
+import { CreateInterviewSchema, EditInterviewSchema } from "../lib/schemas";
 import { X, Calendar, Video, Clock, Briefcase, Mail } from "lucide-react";
 import { api } from "../lib/axios";
 
@@ -23,7 +23,10 @@ export const InterviewModal: React.FC = () => {
     watch,
     formState: { errors },
   } = useForm({
-    resolver: zodResolver(CreateInterviewSchema),
+    resolver: (values, context, options) => {
+      const schema = isEdit ? EditInterviewSchema : CreateInterviewSchema;
+      return zodResolver(schema)(values, context, options);
+    },
     defaultValues: {
       candidate_email: "",
       role: "",
@@ -65,11 +68,13 @@ export const InterviewModal: React.FC = () => {
   useEffect(() => {
     if (isOpen) {
       if (isEdit && modalData) {
-        // Format ISO date to datetime-local format (YYYY-MM-DDTHH:MM)
+        // Format ISO date to datetime-local format (YYYY-MM-DDTHH:MM) in local timezone
         let formattedDate = "";
         if (modalData.date) {
           const d = new Date(modalData.date);
-          formattedDate = d.toISOString().slice(0, 16);
+          const offset = d.getTimezoneOffset();
+          const localDate = new Date(d.getTime() - offset * 60 * 1000);
+          formattedDate = localDate.toISOString().slice(0, 16);
         }
 
         reset({
@@ -110,11 +115,15 @@ export const InterviewModal: React.FC = () => {
 
   const onSubmit = async (data: any) => {
     try {
+      const formattedData = {
+        ...data,
+        date: data.date ? new Date(data.date).toISOString() : "",
+      };
       if (isEdit && modalData) {
-        await updateInterview(modalData.id, data);
+        await updateInterview(modalData.id, formattedData);
         addToast("Interview updated successfully!", "success");
       } else {
-        await createInterview(data);
+        await createInterview(formattedData);
         addToast("Interview scheduled successfully!", "success");
       }
       closeModal();

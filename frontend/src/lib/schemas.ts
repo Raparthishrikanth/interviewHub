@@ -49,6 +49,30 @@ export const CreateInterviewSchema = z.object({
   notes: z.string().max(1000, "Notes cannot exceed 1000 characters").optional(),
 });
 
+export const EditInterviewSchema = z.object({
+  candidate_email: z.string().email("Invalid email address"),
+  role: z.string().min(1, "Role is required"),
+  department: z.string().optional(),
+  type: z.enum(["TECHNICAL", "HR", "MANAGERIAL", "CULTURE_FIT", "FINAL_ROUND"]),
+  mode: z.enum(["ONLINE", "IN_PERSON", "PHONE"]),
+  category: z.string().optional(),
+  date: z.string().refine((val) => {
+    const d = new Date(val);
+    return !isNaN(d.getTime());
+  }, {
+    message: "Invalid date format",
+  }),
+  duration_min: z.preprocess(
+    (val) => parseInt(val as string, 10),
+    z.number().min(15, "Duration must be at least 15 mins").max(240, "Duration cannot exceed 240 mins")
+  ),
+  interviewer: z.string().optional(),
+  interview_handler: z.string().optional(),
+  meeting_link: z.string().url("Invalid URL").or(z.literal("")).optional(),
+  notes: z.string().max(1000, "Notes cannot exceed 1000 characters").optional(),
+});
+
+
 export const CreateNoticeSchema = z.object({
   title: z.string().min(5, "Title must be at least 5 characters").max(200),
   body: z.string().min(10, "Body must be at least 10 characters").max(5000),

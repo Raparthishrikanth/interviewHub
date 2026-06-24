@@ -34,6 +34,10 @@ class InterviewHubConsumer(AsyncJsonWebsocketConsumer):
         if await self._is_allowed(event):
             await self.send_json(event)
 
+    async def interview_updated(self, event):
+        if await self._is_allowed(event):
+            await self.send_json(event)
+
     async def interview_deleted(self, event):
         if await self._is_allowed(event):
             await self.send_json(event)

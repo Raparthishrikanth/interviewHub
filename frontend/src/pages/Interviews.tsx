@@ -13,7 +13,10 @@ import {
   Edit,
   Video,
   FileSpreadsheet,
-  Eye
+  Eye,
+  Calendar,
+  Clock,
+  User
 } from "lucide-react";
 
 export const Interviews: React.FC = () => {
@@ -153,8 +156,8 @@ export const Interviews: React.FC = () => {
           </div>
         </div>
 
-        {/* Core Table */}
-        <div className="bg-white border border-slate-200/80 rounded-2xl overflow-hidden shadow-premium">
+        {/* Desktop View (Table) */}
+        <div className="hidden md:block bg-white border border-slate-200/80 rounded-2xl overflow-hidden shadow-premium">
           <div className="overflow-x-auto">
             <table className="w-full text-left border-collapse">
               <thead>
@@ -297,6 +300,131 @@ export const Interviews: React.FC = () => {
               </tbody>
             </table>
           </div>
+        </div>
+
+        {/* Mobile View (Cards / Squares) */}
+        <div className="md:hidden space-y-4">
+          {interviews.map((interview) => (
+            <div key={interview.id} className="bg-white border border-slate-200/80 p-5 rounded-2xl shadow-sm space-y-4">
+              
+              {/* Header: Candidate & Status */}
+              <div className="flex items-start justify-between border-b border-slate-100 pb-3">
+                <div>
+                  <Link to={`/interviews/${interview.id}`} className="font-bold text-slate-800 hover:text-brand-600 transition-colors">
+                    {interview.candidate?.name}
+                  </Link>
+                  <span className="text-[10px] text-slate-400 block mt-0.5">{interview.candidate?.email}</span>
+                </div>
+                <div>
+                  {isAdmin && interview.status !== "CANCELLED" && interview.status !== "COMPLETED" ? (
+                    <select
+                      value={interview.status}
+                      onChange={(e) => handleStatusChange(interview.id, e.target.value)}
+                      className="text-xs font-bold bg-slate-50 border border-slate-200 rounded-lg p-1.5 outline-none focus:border-brand-500"
+                    >
+                      <option value="PENDING">PENDING</option>
+                      <option value="CONFIRMED">CONFIRMED</option>
+                      <option value="COMPLETED">COMPLETED</option>
+                      <option value="RESCHEDULED">RESCHEDULED</option>
+                      <option value="CANCELLED">CANCELLED</option>
+                    </select>
+                  ) : (
+                    <StatusBadge status={interview.status} />
+                  )}
+                </div>
+              </div>
+
+              {/* Details grid */}
+              <div className="grid grid-cols-2 gap-4 text-xs">
+                <div>
+                  <span className="text-slate-400 font-bold block uppercase tracking-wider text-[9px]">Role & Dept</span>
+                  <span className="font-semibold text-slate-700 block mt-1">{interview.role}</span>
+                  <span className="text-slate-400 block mt-0.5 text-[10px]">{interview.department || "N/A"}</span>
+                </div>
+                <div>
+                  <span className="text-slate-400 font-bold block uppercase tracking-wider text-[9px]">Round Type</span>
+                  <span className="font-bold text-slate-800 block mt-1">
+                    {interview.type}
+                    {interview.category && (
+                      <span className="ml-1.5 px-1 py-0.5 text-[9px] font-bold bg-brand-50 text-brand-700 rounded-md border border-brand-100">
+                        {interview.category}
+                      </span>
+                    )}
+                  </span>
+                  <span className="text-slate-500 block mt-0.5 text-[10px]">{interview.mode}</span>
+                </div>
+                <div>
+                  <span className="text-slate-400 font-bold block uppercase tracking-wider text-[9px]">Date & Time</span>
+                  <span className="font-semibold text-slate-700 block mt-1 flex items-center gap-1">
+                    <Calendar className="w-3.5 h-3.5 text-slate-400" />
+                    {new Date(interview.date).toLocaleDateString(undefined, {
+                      month: "short",
+                      day: "numeric",
+                      hour: "2-digit",
+                      minute: "2-digit"
+                    })}
+                  </span>
+                </div>
+                <div>
+                  <span className="text-slate-400 font-bold block uppercase tracking-wider text-[9px]">Interviewer</span>
+                  <span className="font-semibold text-slate-700 block mt-1 flex items-center gap-1">
+                    <User className="w-3.5 h-3.5 text-slate-400" />
+                    {interview.interviewer || "Not assigned"}
+                  </span>
+                  {interview.interview_handler && (
+                    <span className="text-slate-400 block mt-0.5 text-[10px]">
+                      Handler: {interview.interview_handler}
+                    </span>
+                  )}
+                </div>
+              </div>
+
+              {/* Meeting Link & Actions */}
+              <div className="flex items-center justify-between border-t border-slate-100 pt-3 text-xs">
+                <div>
+                  {interview.meeting_link && (
+                    <a href={interview.meeting_link} target="_blank" rel="noreferrer" className="inline-flex items-center gap-1 text-brand-600 font-bold hover:underline">
+                      <Video className="w-3.5 h-3.5" />
+                      Join Meeting
+                    </a>
+                  )}
+                </div>
+                <div className="flex items-center gap-1">
+                  <Link
+                    to={`/interviews/${interview.id}`}
+                    className="p-2 text-slate-400 hover:text-slate-600 rounded-xl hover:bg-slate-100 transition-colors"
+                    title="View Thread"
+                  >
+                    <Eye className="w-4.5 h-4.5" />
+                  </Link>
+                  {isAdmin && (
+                    <>
+                      <button
+                        onClick={() => openModal("edit_interview", interview)}
+                        className="p-2 text-slate-400 hover:text-brand-600 rounded-xl hover:bg-brand-50 transition-colors"
+                        title="Reschedule / Edit"
+                      >
+                        <Edit className="w-4.5 h-4.5" />
+                      </button>
+                      <button
+                        onClick={() => handleDelete(interview.id)}
+                        className="p-2 text-slate-400 hover:text-rose-600 rounded-xl hover:bg-rose-50 transition-colors"
+                        title="Delete Record"
+                      >
+                        <Trash2 className="w-4.5 h-4.5" />
+                      </button>
+                    </>
+                  )}
+                </div>
+              </div>
+
+            </div>
+          ))}
+          {interviews.length === 0 && !loading && (
+            <div className="bg-white border border-slate-200/80 p-8 rounded-2xl text-center text-sm font-semibold text-slate-400">
+              No interviews match the active filters.
+            </div>
+          )}
         </div>
 
       </main>

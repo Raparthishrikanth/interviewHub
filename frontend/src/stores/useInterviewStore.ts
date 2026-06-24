@@ -72,6 +72,7 @@ interface InterviewState {
   
   // WS sync actions
   addInterviewLocally: (interview: Interview) => void;
+  updateInterviewLocally: (interview: Interview) => void;
   updateStatusLocally: (id: string, newStatus: string) => void;
   removeInterviewLocally: (id: string) => void;
   fetchStats: () => Promise<void>;
@@ -217,6 +218,16 @@ export const useInterviewStore = create<InterviewState>((set, get) => ({
     set({
       interviews: list,
       selectedInterview: (selected && selected.id === id) ? { ...selected, status: newStatus as any } : selected
+    });
+    get().fetchStats();
+  },
+
+  updateInterviewLocally: (interview) => {
+    const list = get().interviews.map((item) => (item.id === interview.id ? interview : item));
+    const selected = get().selectedInterview;
+    set({
+      interviews: list,
+      selectedInterview: (selected && selected.id === interview.id) ? interview : selected
     });
     get().fetchStats();
   },

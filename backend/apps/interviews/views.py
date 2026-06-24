@@ -131,6 +131,39 @@ class InterviewViewSet(viewsets.ModelViewSet):
 
         return Response(serializer.data, status=status.HTTP_201_CREATED)
 
+    def perform_update(self, serializer):
+        old_instance = self.get_object()
+        old_date = old_instance.date
+        old_role = old_instance.role
+        old_type = old_instance.type
+        old_interviewer = old_instance.interviewer
+
+        with transaction.atomic():
+            instance = serializer.save()
+            
+            changes = []
+            if old_date != instance.date:
+                old_str = old_date.strftime("%Y-%m-%d %H:%M")
+                new_str = instance.date.strftime("%Y-%m-%d %H:%M")
+                changes.append(f"rescheduled to {new_str} UTC (was {old_str} UTC)")
+            if old_role != instance.role:
+                changes.append(f"role changed to '{instance.role}' (was '{old_role}')")
+            if old_type != instance.type:
+                changes.append(f"type changed to {instance.type} (was {old_type})")
+            if old_interviewer != instance.interviewer:
+                changes.append(f"interviewer changed to '{instance.interviewer}' (was '{old_interviewer}')")
+
+            if changes:
+                msg = f"Interview details updated: {', '.join(changes)}."
+                HistoryLog.objects.create(
+                    interview=instance,
+                    message=msg,
+                    actor_name=self.request.user.name
+                )
+
+        updated_data = self.get_serializer(instance).data
+        ws_broadcast("interview_updated", {"interview": updated_data, "candidateId": str(instance.candidate.id)})
+
     def perform_destroy(self, instance):
         # Admin delete triggers delete and broadcasts status change or delete
         interview_id = str(instance.id)

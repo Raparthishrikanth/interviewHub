@@ -13,7 +13,10 @@ import {
   Plus,
   ArrowRight,
   TrendingUp,
-  FileSpreadsheet
+  FileSpreadsheet,
+  Calendar,
+  Video,
+  User
 } from "lucide-react";
 
 export const Dashboard: React.FC = () => {
@@ -157,7 +160,8 @@ export const Dashboard: React.FC = () => {
               </Link>
             </div>
             
-            <div className="flex-grow overflow-x-auto">
+            {/* Desktop View (Table) */}
+            <div className="hidden md:block flex-grow overflow-x-auto">
               <table className="w-full text-left border-collapse">
                 <thead>
                   <tr className="bg-slate-50/50 border-b border-slate-100 text-slate-400 text-[10px] font-bold uppercase tracking-wider">
@@ -218,6 +222,74 @@ export const Dashboard: React.FC = () => {
                   )}
                 </tbody>
               </table>
+            </div>
+
+            {/* Mobile View (Cards / Squares) */}
+            <div className="md:hidden flex-grow p-4 space-y-4">
+              {interviews.slice(0, 5).map((interview) => (
+                <div key={interview.id} className="bg-white border border-slate-100 p-4 rounded-xl shadow-sm space-y-3">
+                  
+                  {/* Header: Candidate & Status */}
+                  <div className="flex items-start justify-between border-b border-slate-100 pb-2.5">
+                    <div>
+                      <Link to={`/interviews/${interview.id}`} className="text-sm font-bold text-slate-800 hover:text-brand-600 transition-colors block">
+                        {interview.candidate?.name}
+                      </Link>
+                      <span className="text-[10px] text-slate-500 font-medium block mt-0.5">{interview.candidate?.email}</span>
+                    </div>
+                    <StatusBadge status={interview.status} />
+                  </div>
+
+                  {/* Details grid */}
+                  <div className="grid grid-cols-2 gap-3 text-xs">
+                    <div>
+                      <span className="text-slate-400 font-bold block uppercase tracking-wider text-[9px]">Role & Dept</span>
+                      <span className="font-semibold text-slate-700 block mt-1">{interview.role}</span>
+                      <span className="text-slate-400 block mt-0.5 text-[10px]">{interview.department || "N/A"}</span>
+                    </div>
+                    <div>
+                      <span className="text-slate-400 font-bold block uppercase tracking-wider text-[9px]">Round / Mode</span>
+                      <span className="font-bold text-brand-600 block mt-1">
+                        {interview.type}
+                        {interview.category && (
+                          <span className="ml-1.5 px-1 py-0.5 text-[9px] font-bold bg-brand-50 text-brand-700 rounded border border-brand-100">
+                            {interview.category}
+                          </span>
+                        )}
+                      </span>
+                      <span className="text-slate-500 block mt-0.5 text-[10px]">{interview.mode}</span>
+                    </div>
+                    <div className="col-span-2">
+                      <span className="text-slate-400 font-bold block uppercase tracking-wider text-[9px]">Date & Time</span>
+                      <span className="font-semibold text-slate-700 block mt-1 flex items-center gap-1">
+                        <Calendar className="w-3.5 h-3.5 text-slate-400" />
+                        {new Date(interview.date).toLocaleDateString(undefined, {
+                          month: "short",
+                          day: "numeric",
+                          hour: "2-digit",
+                          minute: "2-digit"
+                        })}
+                      </span>
+                    </div>
+                  </div>
+
+                  {/* Link action */}
+                  {interview.meeting_link && (
+                    <div className="border-t border-slate-100 pt-2.5">
+                      <a href={interview.meeting_link} target="_blank" rel="noreferrer" className="inline-flex items-center gap-1 text-[10px] text-brand-600 font-bold hover:underline">
+                        <Video className="w-3.5 h-3.5" />
+                        Join Meeting
+                      </a>
+                    </div>
+                  )}
+
+                </div>
+              ))}
+              {interviews.length === 0 && (
+                <div className="py-12 text-center text-sm font-semibold text-slate-400">
+                  No interviews scheduled. Click "Schedule Round" to begin!
+                </div>
+              )}
             </div>
           </div>
 
