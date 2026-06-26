@@ -44,7 +44,7 @@ class Interview(models.Model):
     duration_min = models.PositiveIntegerField(default=60)
     interviewer       = models.CharField(max_length=255, blank=True)
     interview_handler = models.CharField(max_length=255, blank=True, default="")
-    meeting_link      = models.URLField(blank=True)
+    meeting_link      = models.URLField(max_length=500, blank=True)
     notes        = models.TextField(blank=True, max_length=1000)
     status       = models.CharField(max_length=20, choices=Status.choices, default=Status.PENDING)
     created_at   = models.DateTimeField(auto_now_add=True)
